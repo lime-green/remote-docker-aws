@@ -1,0 +1,2 @@
+project_code: remote-docker
+region: {{ var.region }}
