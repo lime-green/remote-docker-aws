@@ -139,7 +139,7 @@ def cmd_update(config: RemoteDockerConfigProfile):
     name="tunnel",
     help=(
         "Create a SSH tunnel to the remote instance to connect"
-        " with the docker agent and containers",
+        " with the docker agent and containers"
     ),
 )
 @click.option(
