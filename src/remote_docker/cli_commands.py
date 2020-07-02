@@ -56,7 +56,8 @@ def cli(ctx, profile_name, config_path):
         os.environ["AWS_PROFILE"] = aws_profile
     except KeyError:
         print(
-            "Missing aws_profile config option. Provide via `AWS_PROFILE` env-var or add it to your config"
+            "Missing aws_profile config option."
+            " Provide via `AWS_PROFILE` env-var or add it to your config"
         )
         sys.exit(1)
 
@@ -65,7 +66,8 @@ def cli(ctx, profile_name, config_path):
         os.environ["AWS_REGION"] = aws_region
     except KeyError:
         print(
-            "Missing aws_region config option. Provide via `AWS_REGION` env-var or add it to your config"
+            "Missing aws_region config option."
+            " Provide via `AWS_REGION` env-var or add it to your config"
         )
         sys.exit(1)
 
@@ -135,7 +137,10 @@ def cmd_update(config: RemoteDockerConfigProfile):
 
 @cli.command(
     name="tunnel",
-    help="Create a SSH tunnel to the remote instance to connect with the docker agent and containers",
+    help=(
+        "Create a SSH tunnel to the remote instance to connect"
+        " with the docker agent and containers",
+    ),
 )
 @click.option(
     "--local",
