@@ -4,7 +4,7 @@ import pytest
 from contextlib import contextmanager
 from unittest import mock
 
-from remote_docker.config import RemoteDockerConfigProfile
+from remote_docker_aws.config import RemoteDockerConfigProfile
 
 
 @pytest.fixture

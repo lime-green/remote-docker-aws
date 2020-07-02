@@ -14,7 +14,7 @@ INSTALL_REQUIRES = ("boto3", "sceptre>=2.3", "click", "unison-gitignore")
 
 
 setup(
-    name="remote-docker",
+    name="remote-docker-aws",
     install_requires=INSTALL_REQUIRES,
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
@@ -22,16 +22,16 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Josh DM",
-    url="https://github.com/lime-green/remote-docker",
+    url="https://github.com/lime-green/remote-docker-aws",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     package_data={
         # Is this 2020?
-        "remote_docker": ["*", "*/*", "*/*/*", "*/*/*/*"]
+        "remote_docker_aws": ["*", "*/*", "*/*/*", "*/*/*/*"]
     },
     entry_points={
         "console_scripts": [
-            "remote-docker = remote_docker.main:main",
+            "remote-docker-aws = remote_docker.main:main",
             "rd = remote_docker.main:main",
         ]
     },

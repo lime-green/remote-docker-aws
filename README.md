@@ -1,4 +1,4 @@
-## Remote Docker for local development
+## Remote Docker on AWS for local development
 Why is this useful?
 
 So that your local machine can be dedicated to useful tasks
@@ -33,7 +33,7 @@ and [create access keys to access AWS through the CLI](https://docs.aws.amazon.c
 
     ```bash
    # Clone this project and cd into the project
-   pipx install --spec . remote-docker
+   pipx install --spec . remote-docker-aws
    pipx install unison-gitignore
 
    # Install filewatcher utilities

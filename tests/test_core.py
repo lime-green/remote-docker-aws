@@ -8,7 +8,7 @@ from unittest import mock
 import pytest
 from moto import mock_cloudformation, mock_ec2
 
-from remote_docker.core import (
+from remote_docker_aws.core import (
     create_keypair,
     create_instance,
     delete_instance,
@@ -24,6 +24,11 @@ from remote_docker.core import (
 
 KEY_PATH = "/fake_key_path"
 REGION = "ca-central-1"
+
+
+patch_exec = mock.patch("os.execvp", autospec=True)
+patch_run = mock.patch("subprocess.run", autospec=True)
+patch_get_ip = mock.patch("remote_docker_aws.core.get_ip", autospec=True)
 
 
 def generate_ssh_public_key():
@@ -70,8 +75,8 @@ class TestCore:
                 == "There are no valid reservations, did you create the instance?"
             )
 
-    @mock.patch("remote_docker.core.os.execvp", autospec=True)
-    @mock.patch("remote_docker.core.wait_until_port_is_open", autospec=True)
+    @patch_exec
+    @mock.patch("remote_docker_aws.core.wait_until_port_is_open", autospec=True)
     def test_creates_and_interacts_with_instance(self, mock_wait, mock_execvp):
         create_instance(
             ssh_key_path="mock_key_path", aws_region=REGION, instance_type="c4.xlarge"
@@ -92,9 +97,9 @@ class TestCore:
         with pytest.raises(RuntimeError):
             get_ip(aws_region=REGION)
 
-    @mock.patch("remote_docker.core.get_ip", autospec=True)
-    @mock.patch("remote_docker.core.os.execvp", autospec=True)
-    @mock.patch("remote_docker.core.subprocess.run", autospec=True)
+    @patch_get_ip
+    @patch_exec
+    @patch_run
     def test_sync(self, mock_run, mock_execvp, mock_get_ip):
         mock_get_ip.return_value = "1.2.3.4"
         sync(
@@ -148,8 +153,8 @@ class TestCore:
             "watch",
         ]
 
-    @mock.patch("remote_docker.core.get_ip", autospec=True)
-    @mock.patch("remote_docker.core.subprocess.run", autospec=True)
+    @patch_get_ip
+    @patch_run
     def test_tunnel(self, mock_run, mock_get_ip):
         mock_get_ip.return_value = "1.2.3.4"
         local_forwards = dict(test_local={"80": "80"})
@@ -184,9 +189,9 @@ class TestCore:
             "0.0.0.0:8080:localhost:8080",
         ]
 
-    @mock.patch("remote_docker.core.subprocess.run", autospec=True)
+    @patch_run
     def test_create_keypair(self, mock_run):
-        with mock.patch("remote_docker.core.open") as mock_open:
+        with mock.patch("remote_docker_aws.core.open") as mock_open:
             mock_open.side_effect = mock.mock_open(
                 read_data=generate_ssh_public_key().decode()
             )
