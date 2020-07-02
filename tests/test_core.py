@@ -191,7 +191,7 @@ class TestCore:
 
     @patch_run
     def test_create_keypair(self, mock_run):
-        with mock.patch("remote_docker_aws.core.open") as mock_open:
+        with mock.patch("builtins.open") as mock_open:
             mock_open.side_effect = mock.mock_open(
                 read_data=generate_ssh_public_key().decode()
             )

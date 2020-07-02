@@ -26,13 +26,13 @@ def file_open_mocker():
     return _mocker
 
 
-@mock.patch("remote_docker.config.os.path.isfile", return_value=False)
+@mock.patch("os.path.isfile", return_value=False)
 def test_handles_file_does_not_exist(_mock_is_file):
     config = RemoteDockerConfigProfile.from_json_file("file_does_not_exist")
     assert config.config_dict == {}
 
 
-@mock.patch("remote_docker.config.os.path.isfile", return_value=True)
+@mock.patch("os.path.isfile", return_value=True)
 def test_handles_file_does_exist(_mock_is_file, file_open_mocker, mock_contents):
     with file_open_mocker(mock_contents):
         config = RemoteDockerConfigProfile.from_json_file("file_does_exist")
