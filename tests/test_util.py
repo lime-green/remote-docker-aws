@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
 
-from remote_docker.util import get_replica_and_sync_paths_for_unison
+from remote_docker_aws.util import get_replica_and_sync_paths_for_unison
 
 
 class TestReplicaAndSyncPathsForUnison:

@@ -4,7 +4,7 @@ import pytest
 from contextlib import contextmanager
 from unittest import mock
 
-from remote_docker.config import RemoteDockerConfigProfile
+from remote_docker_aws.config import RemoteDockerConfigProfile
 
 
 @pytest.fixture
@@ -19,20 +19,20 @@ def file_open_mocker():
         if is_json:
             mock_return_value = json.dumps(mock_return_value)
 
-        with mock.patch("remote_docker.config.open") as mock_open:
+        with mock.patch("builtins.open") as mock_open:
             mock_open.side_effect = mock.mock_open(read_data=mock_return_value)
             yield mock_open
 
     return _mocker
 
 
-@mock.patch("remote_docker.config.os.path.isfile", return_value=False)
+@mock.patch("os.path.isfile", return_value=False)
 def test_handles_file_does_not_exist(_mock_is_file):
     config = RemoteDockerConfigProfile.from_json_file("file_does_not_exist")
     assert config.config_dict == {}
 
 
-@mock.patch("remote_docker.config.os.path.isfile", return_value=True)
+@mock.patch("os.path.isfile", return_value=True)
 def test_handles_file_does_exist(_mock_is_file, file_open_mocker, mock_contents):
     with file_open_mocker(mock_contents):
         config = RemoteDockerConfigProfile.from_json_file("file_does_exist")
