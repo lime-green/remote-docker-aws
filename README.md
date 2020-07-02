@@ -160,7 +160,7 @@ The current configurable values are:
 - Needed in order to authenticate with AWS
 
 #### `aws_region` (takes precedence over `AWS_REGION`)
-- Needed in order to authenticate with AWS
+- The region to create the instance in
 
 #### `instance_type`
 - Type of ec2 instance, defaults to: `t2.medium`
