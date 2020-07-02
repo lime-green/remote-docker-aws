@@ -177,7 +177,7 @@ def cmd_tunnel(config: RemoteDockerConfigProfile, local, remote):
     )
 
 
-@cli.command(name="watch", help="Watch the given directories and sync them with remote")
+@cli.command(name="sync", help="Sync the given directories with the remote instance")
 @click.argument("directory", nargs=-1)
 @pass_config
 def cmd_sync(config: RemoteDockerConfigProfile, directory):
@@ -186,7 +186,7 @@ def cmd_sync(config: RemoteDockerConfigProfile, directory):
     try:
         config.watched_directories
     except KeyError:
-        print("`watch` needs at least one directory")
+        print("Need at least one directory")
         sys.exit(1)
 
     sync(
