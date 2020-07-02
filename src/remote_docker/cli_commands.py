@@ -3,7 +3,7 @@ import os
 import sys
 from typing import Tuple
 
-from .api import (
+from .core import (
     create_keypair,
     get_ip,
     ssh_connect,
@@ -119,14 +119,20 @@ def cmd_create_keypair(config: RemoteDockerConfigProfile):
 )
 @pass_config
 def cmd_create(config: RemoteDockerConfigProfile):
-    print(create_instance(config.key_path, config.aws_region, config.instance_type))
+    print(
+        create_instance(
+            ssh_key_path=config.key_path,
+            aws_region=config.aws_region,
+            instance_type=config.instance_type,
+        )
+    )
 
 
 @cli.command(name="delete", help="Delete the provisioned ec2 instance")
 @pass_config
 def cmd_delete(config: RemoteDockerConfigProfile):
     click.confirm("Are you sure you want to delete your instance?", abort=True)
-    print(delete_instance(config.aws_region, config.instance_type))
+    print(delete_instance(config.aws_region))
 
 
 @cli.command(name="update", help="Update the provisioned instance")

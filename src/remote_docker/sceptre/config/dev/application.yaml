@@ -1,6 +1,6 @@
 template_path: application.yaml
 parameters:
   InstanceType: {{ var.instance_type }}
-  KeyName: remote-docker-keypair
+  KeyName: {{ var.key_pair_name }}
   ServiceName: {{ var.service_name }}
   ImageId: {{ var.image_id }}
