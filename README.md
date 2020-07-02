@@ -18,6 +18,10 @@ Downsides:
 1. First setup your aws-cli to connect to your AWS profile,
 and [create access keys to access AWS through the CLI](https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html)
 
+    You will need the following IAM policies:
+    - AmazonEC2FullAccess
+    - AWSCloudFormationFullAccess
+
     ```bash
     # Replace josh with your name
     # You will need to setup an AWS account if you don't have one
