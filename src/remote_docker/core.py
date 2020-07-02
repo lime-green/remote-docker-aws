@@ -45,11 +45,11 @@ def get_instance(aws_region) -> Dict:
 
     if len(valid_reservations) == 0:
         raise RuntimeError(
-            "There are no instances running, did you start the instance?"
+            "There are no valid reservations, did you create the instance?"
         )
     if len(valid_reservations) > 1:
         raise RuntimeError(
-            "There is more than one instance found that matched, not sure what to do"
+            "There is more than one reservation found that matched, not sure what to do"
         )
 
     instances = valid_reservations[0]["Instances"]

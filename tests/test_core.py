@@ -67,7 +67,7 @@ class TestCore:
             get_ip(aws_region=REGION)
             assert (
                 str(exc.value)
-                == "There are no instances running, did you start the instance?"
+                == "There are no valid reservations, did you create the instance?"
             )
 
     @mock.patch("remote_docker.core.os.execvp", autospec=True)
