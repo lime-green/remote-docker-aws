@@ -137,10 +137,10 @@ class RemoteDockerConfigProfile(JSONConfigWithProfile):
         self.config_dict.setdefault("watched_directories", [])
         self.config_dict["watched_directories"].extend(dirs)
 
-    def add_local_port_forwards(self, key: str, local_port_forwards: List[str]):
+    def add_local_port_forwards(self, key: str, local_port_forwards: Dict):
         self.config_dict.setdefault("local_port_forwards", {})
         self.config_dict["local_port_forwards"][key] = local_port_forwards
 
-    def add_remote_port_forwards(self, key: str, remote_port_forwards: List[str]):
+    def add_remote_port_forwards(self, key: str, remote_port_forwards: Dict):
         self.config_dict.setdefault("remote_port_forwards", {})
         self.config_dict["remote_port_forwards"][key] = remote_port_forwards

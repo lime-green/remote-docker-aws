@@ -22,7 +22,9 @@ from .util import logger
 pass_config = click.make_pass_decorator(RemoteDockerConfigProfile)
 
 
-def _convert_port_forward_to_dict(config: RemoteDockerConfigProfile, port_forwards: Tuple[str]):
+def _convert_port_forward_to_dict(
+    config: RemoteDockerConfigProfile, port_forwards: Tuple[str]
+):
     if port_forwards is None:
         return None
 

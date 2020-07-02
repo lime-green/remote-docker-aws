@@ -3,6 +3,7 @@ import os
 import pathlib
 import socket
 import time
+from typing import List
 
 
 log_level = os.environ.get("REMOTE_DOCKER_LOG_LEVEL", "WARN")
@@ -14,7 +15,7 @@ handler.setFormatter(logFormatter)
 logger.addHandler(handler)
 
 
-def get_replica_and_sync_paths_for_unison(dirs):
+def get_replica_and_sync_paths_for_unison(dirs: List[str]):
     """
     Converts directory paths into replica + sync paths for unison to understand
 
@@ -23,19 +24,23 @@ def get_replica_and_sync_paths_for_unison(dirs):
     accepted by unison for some reason so we will just take the second path after
     that, and make sure that it's common between all the dirs
     """
+    if not dirs:
+        raise ValueError("Directories must not be empty")
+
     replica_path = None
     sync_paths = []
 
     for dir_path in dirs:
         dir_parts = pathlib.Path(dir_path).parts
+        if len(dir_parts) < 2:
+            raise ValueError("Directories must be children of the root directory")
+
         path_first_dir = pathlib.Path(*dir_parts[0:2])
 
         if replica_path is None:
             replica_path = path_first_dir
-        else:
-            assert (
-                path_first_dir == replica_path
-            ), "Directories must share a common path other than '/'"
+        elif path_first_dir != replica_path:
+            raise ValueError("Directories must share a common path other than '/'")
         sync_paths.append(pathlib.Path(*dir_parts[2:]))
 
     return replica_path, sync_paths
