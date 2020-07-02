@@ -10,12 +10,7 @@ if exists(readme_path):
 else:
     long_description = ""
 
-INSTALL_REQUIRES = (
-    "boto3",
-    "sceptre>=2.3",
-    "click",
-    "unison-gitignore",
-)
+INSTALL_REQUIRES = ("boto3", "sceptre>=2.3", "click", "unison-gitignore")
 
 
 setup(
@@ -32,13 +27,13 @@ setup(
     packages=find_packages(where="src"),
     package_data={
         # Is this 2020?
-        "remote_docker": ["*", "*/*", "*/*/*", "*/*/*/*"],
+        "remote_docker": ["*", "*/*", "*/*/*", "*/*/*/*"]
     },
     entry_points={
         "console_scripts": [
             "remote-docker = remote_docker.main:main",
             "rd = remote_docker.main:main",
-        ],
+        ]
     },
     classifiers=[
         "Development Status :: 3 - Alpha",
