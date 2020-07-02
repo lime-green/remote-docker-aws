@@ -179,9 +179,10 @@ def delete_instance(region: str, instance_type: str) -> Dict:
     return result
 
 
+# flake8: noqa: E501
 def bootstrap_instance(ssh_key_path, aws_region):
     logger.warning("Bootstrapping instance, will take a few minutes")
-    configure_instance_cmd_s = f"""
+    configure_instance_cmd_s = """
     set -x
     && sudo apt-get -y update
     && sudo apt-get -y install build-essential curl file git docker.io
@@ -209,7 +210,11 @@ def _build_ssh_cmd(ssh_key_path, ip, ssh_cmd=None, options=None):
     ssh_cmd = ssh_cmd if ssh_cmd else ""
     options = options if options else ""
 
-    cmd_s = f"ssh -o StrictHostKeyChecking=no -i {ssh_key_path} {options} {INSTANCE_USERNAME}@{ip} {ssh_cmd}"
+    cmd_s = f"""
+    ssh -o StrictHostKeyChecking=no -i {ssh_key_path}
+    {options} {INSTANCE_USERNAME}@{ip} {ssh_cmd}
+    """
+
     return shlex.split(cmd_s)
 
 
