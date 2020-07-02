@@ -1,3 +1,9 @@
 black
 pytest
 flake8
+moto
+cryptography
+
+# Needed for sceptre + moto compatibility
+# Remove this once sceptre uses >= 2.4
+networkx==2.1

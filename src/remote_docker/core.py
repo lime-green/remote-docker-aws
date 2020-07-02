@@ -15,6 +15,7 @@ from unison_gitignore.parser import GitIgnoreToUnisonIgnore
 from .constants import (
     AWS_REGION_TO_UBUNTU_AMI_MAPPING,
     DOCKER_PORT_FORWARD,
+    KEY_PAIR_NAME,
     INSTANCE_SERVICE_NAME,
     INSTANCE_USERNAME,
     PORT_MAP_TYPE,
@@ -41,7 +42,16 @@ def get_instance(aws_region) -> Dict:
         if len(reservation["Instances"]) == 1
         and reservation["Instances"][0]["State"]["Name"] != "terminated"
     ]
-    assert len(valid_reservations) == 1, f"{len(valid_reservations)} != 1"
+
+    if len(valid_reservations) == 0:
+        raise RuntimeError(
+            "There are no instances running, did you start the instance?"
+        )
+    if len(valid_reservations) > 1:
+        raise RuntimeError(
+            "There is more than one instance found that matched, not sure what to do"
+        )
+
     instances = valid_reservations[0]["Instances"]
     assert len(instances) == 1, f"{len(instances)} != 1"
     return instances[0]
@@ -120,12 +130,13 @@ def import_key(name, file_location, aws_region) -> Dict:
     )
 
 
-def _get_sceptre_plan(region: str, instance_type: str) -> SceptrePlan:
+def _get_sceptre_plan(region: str, instance_type: str = None) -> SceptrePlan:
     sceptre_path = os.path.join(pathlib.Path(__file__).parent.absolute(), "sceptre")
     context = SceptreContext(
         sceptre_path,
         "dev/application.yaml",
         user_variables=dict(
+            key_pair_name=KEY_PAIR_NAME,
             image_id=AWS_REGION_TO_UBUNTU_AMI_MAPPING[region],
             instance_type=instance_type,
             region=region,
@@ -135,7 +146,7 @@ def _get_sceptre_plan(region: str, instance_type: str) -> SceptrePlan:
     return SceptrePlan(context)
 
 
-def create_instance(ssh_key_path: str, aws_region: str, instance_type: str):
+def create_instance(*, ssh_key_path: str, aws_region: str, instance_type: str):
     logger.warning("Creating instance")
     result = _get_sceptre_plan(aws_region, instance_type).create()
 
@@ -159,7 +170,7 @@ def create_instance(ssh_key_path: str, aws_region: str, instance_type: str):
     bootstrap_instance(ssh_key_path=ssh_key_path, aws_region=aws_region)
 
 
-def update_instance(region: str, instance_type: str) -> Dict:
+def update_instance(region: str, instance_type: str = None) -> Dict:
     logger.warning("Updating instance")
     result = _get_sceptre_plan(region, instance_type).update()
 
@@ -169,9 +180,9 @@ def update_instance(region: str, instance_type: str) -> Dict:
     return result
 
 
-def delete_instance(region: str, instance_type: str) -> Dict:
+def delete_instance(region: str) -> Dict:
     logger.warning("Deleting instance")
-    result = _get_sceptre_plan(region, instance_type).delete()
+    result = _get_sceptre_plan(region).delete()
 
     logger.debug("Got sceptre result: %s", result)
     if "complete" not in result.values():
@@ -237,20 +248,21 @@ def ssh_run(*, ssh_key_path: str, ip: str, ssh_cmd: str):
 def create_keypair(ssh_key_path: str, aws_region: str) -> Dict:
     path = ssh_key_path
     p = subprocess.run(
-        f"ssh-keygen -t rsa -b 4096 -f {path}",
+        shlex.split(f"ssh-keygen -t rsa -b 4096 -f {path}"),
         shell=True,
         stdout=sys.stdout,
         stderr=sys.stderr,
     )
     p.check_returncode()
     p = subprocess.run(
-        f"ssh-add -K {path}", shell=True, stdout=sys.stdout, stderr=sys.stderr
+        shlex.split(f"ssh-add -K {path}"),
+        shell=True,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
     )
     p.check_returncode()
     return import_key(
-        aws_region=aws_region,
-        name="remote-docker-keypair2",
-        file_location=f"{path}.pub",
+        aws_region=aws_region, name=KEY_PAIR_NAME, file_location=f"{path}.pub",
     )
 
 
