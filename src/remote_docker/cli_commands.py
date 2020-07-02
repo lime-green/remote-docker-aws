@@ -13,7 +13,7 @@ from .core import (
     start_instance,
     stop_instance,
     start_tunnel,
-    watch,
+    sync,
 )
 from .config import RemoteDockerConfigProfile
 from .util import logger
@@ -177,19 +177,19 @@ def cmd_tunnel(config: RemoteDockerConfigProfile, local, remote):
     )
 
 
-@cli.command(name="watch", help="Watch the given directories and sync them with remote")
+@cli.command(name="sync", help="Sync the given directories with the remote instance")
 @click.argument("directory", nargs=-1)
 @pass_config
-def cmd_watch(config: RemoteDockerConfigProfile, directory):
+def cmd_sync(config: RemoteDockerConfigProfile, directory):
     if directory:
         config.add_watched_directories(directory)
     try:
         config.watched_directories
     except KeyError:
-        print("`watch` needs at least one directory")
+        print("Need at least one directory")
         sys.exit(1)
 
-    watch(
+    sync(
         dirs=config.watched_directories,
         ssh_key_path=config.key_path,
         sync_ignore_patterns_git=config.sync_ignore_patterns_git,

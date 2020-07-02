@@ -20,7 +20,7 @@ INSTALL_REQUIRES = (
 
 setup(
     name="remote-docker",
-    install_requires=[INSTALL_REQUIRES],
+    install_requires=INSTALL_REQUIRES,
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
     description="Client to control a remote-docker agent",
@@ -54,5 +54,5 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     license="MIT",
-    keywords=["docker", "docker-agent", "cloud"],
+    keywords=["docker", "aws", "development", "macos", "linux"],
 )

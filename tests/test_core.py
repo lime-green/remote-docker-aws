@@ -18,7 +18,7 @@ from remote_docker.core import (
     start_tunnel,
     start_instance,
     stop_instance,
-    watch,
+    sync,
 )
 
 
@@ -95,9 +95,9 @@ class TestCore:
     @mock.patch("remote_docker.core.get_ip", autospec=True)
     @mock.patch("remote_docker.core.os.execvp", autospec=True)
     @mock.patch("remote_docker.core.subprocess.run", autospec=True)
-    def test_watch(self, mock_run, mock_execvp, mock_get_ip):
+    def test_sync(self, mock_run, mock_execvp, mock_get_ip):
         mock_get_ip.return_value = "1.2.3.4"
-        watch(
+        sync(
             dirs=["/fake/dir"],
             ssh_key_path="/fake_key_path",
             sync_ignore_patterns_git=["test.py"],
