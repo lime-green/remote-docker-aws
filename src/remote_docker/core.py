@@ -248,14 +248,17 @@ def ssh_run(*, ssh_key_path: str, ip: str, ssh_cmd: str):
 def create_keypair(ssh_key_path: str, aws_region: str) -> Dict:
     path = ssh_key_path
     p = subprocess.run(
-        f"ssh-keygen -t rsa -b 4096 -f {path}",
+        shlex.split(f"ssh-keygen -t rsa -b 4096 -f {path}"),
         shell=True,
         stdout=sys.stdout,
         stderr=sys.stderr,
     )
     p.check_returncode()
     p = subprocess.run(
-        f"ssh-add -K {path}", shell=True, stdout=sys.stdout, stderr=sys.stderr
+        shlex.split(f"ssh-add -K {path}"),
+        shell=True,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
     )
     p.check_returncode()
     return import_key(

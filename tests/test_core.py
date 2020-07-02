@@ -1,5 +1,4 @@
 import ipaddress
-import os
 from cryptography.hazmat.primitives import serialization as crypto_serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend as crypto_default_backend
@@ -57,26 +56,6 @@ def fix_dependency_conflict():
     can't fix because sceptre is pinned at networkx==2.1 right now :(
     """
     with mock.patch.object(EntryPoint, "require", return_value=True):
-        yield
-
-
-@pytest.fixture(autouse=True, scope="module")
-def ensure_aws_is_mocked():
-    with mock.patch.dict(
-        os.environ,
-        {
-            "AWS_ACCESS_KEY_ID": "testing",
-            "AWS_SECRET_ACCESS_KEY": "testing",
-            "AWS_SECURITY_TOKEN": "testing",
-            "AWS_SESSION_TOKEN": "testing",
-        },
-    ):
-        yield
-
-
-@pytest.fixture(autouse=True, scope="module")
-def ensure_sleep_is_mocked():
-    with mock.patch("time.sleep"):
         yield
 
 
@@ -215,8 +194,16 @@ class TestCore:
 
         assert mock_run.call_count == 2
         call_1, call_2 = mock_run.call_args_list
-        assert call_1[0][0] == "ssh-keygen -t rsa -b 4096 -f /fake_key_path"
-        assert call_2[0][0] == "ssh-add -K /fake_key_path"
+        assert call_1[0][0] == [
+            "ssh-keygen",
+            "-t",
+            "rsa",
+            "-b",
+            "4096",
+            "-f",
+            "/fake_key_path",
+        ]
+        assert call_2[0][0] == ["ssh-add", "-K", "/fake_key_path"]
 
         key_pairs = get_ec2_client(REGION).describe_key_pairs()["KeyPairs"]
         assert len(key_pairs) == 1
