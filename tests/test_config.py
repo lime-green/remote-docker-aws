@@ -19,7 +19,7 @@ def file_open_mocker():
         if is_json:
             mock_return_value = json.dumps(mock_return_value)
 
-        with mock.patch("remote_docker.config.open") as mock_open:
+        with mock.patch("builtins.open") as mock_open:
             mock_open.side_effect = mock.mock_open(read_data=mock_return_value)
             yield mock_open
 
