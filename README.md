@@ -80,11 +80,11 @@ Note: QUIT Docker Desktop (or any local docker-agent equivalent) when using the 
    rd tunnel -r 8080:8080
     ```
 
-1. In another terminal watch for file changes and sync to the remote instance:
+1. In another terminal sync for file changes and sync to the remote instance:
     ```bash
-    # Add any more paths you need to watch here, or add them to the config file
-    # You will need to watch directories that are mounted as volumes by docker
-    rd watch ~/blog
+    # Add any more paths you need to sync here, or add them to the config file
+    # You will need to sync directories that are mounted as volumes by docker
+    rd sync ~/blog
     ```
 
 1. Make sure to set `DOCKER_HOST`:
@@ -187,7 +187,7 @@ The current configurable values are:
 
 #### `watched_directories`
  - defaults to: `[]`
- - list of paths to watch by `rd watch`
+ - list of paths to sync by `rd sync`
 
  Profiles are a way to organize and override settings for different projects.
 

@@ -296,7 +296,7 @@ def get_unison_cmd(
     return shlex.split(cmd_s.replace("\n", ""))
 
 
-def watch(
+def sync(
     *,
     dirs: List[str],
     ssh_key_path: str,
