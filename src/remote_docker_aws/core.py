@@ -116,7 +116,7 @@ def start_tunnel(
     logger.warning("Forwarding: ")
     logger.warning("Local: %s", local_forwards)
     logger.warning("Remote: %s", remote_forwards)
-    subprocess.run(cmd)
+    os.execvp(cmd[0], cmd)
 
 
 def import_key(name, file_location, aws_region) -> Dict:
@@ -240,27 +240,25 @@ def ssh_connect(
 
 def ssh_run(*, ssh_key_path: str, ip: str, ssh_cmd: str):
     cmd = _build_ssh_cmd(ssh_key_path, ip, ssh_cmd)
-
-    p = subprocess.run(cmd)
-    p.check_returncode()
+    return subprocess.run(cmd, check=True)
 
 
 def create_keypair(ssh_key_path: str, aws_region: str) -> Dict:
     path = ssh_key_path
-    p = subprocess.run(
+    subprocess.run(
         shlex.split(f"ssh-keygen -t rsa -b 4096 -f {path}"),
+        check=True,
         shell=True,
         stdout=sys.stdout,
         stderr=sys.stderr,
     )
-    p.check_returncode()
-    p = subprocess.run(
+    subprocess.run(
         shlex.split(f"ssh-add -K {path}"),
+        check=True,
         shell=True,
         stdout=sys.stdout,
         stderr=sys.stderr,
     )
-    p.check_returncode()
     return import_key(
         aws_region=aws_region, name=KEY_PAIR_NAME, file_location=f"{path}.pub",
     )
@@ -322,7 +320,8 @@ def sync(
             sync_ignore_patterns_git,
             ip=ip,
             force=True,
-        )
+        ),
+        check=True,
     )
 
     # Then watch for update
