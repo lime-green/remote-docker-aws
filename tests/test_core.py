@@ -154,8 +154,8 @@ class TestCore:
         ]
 
     @patch_get_ip
-    @patch_exec
-    def test_tunnel(self, mock_exec, mock_get_ip):
+    @patch_run
+    def test_tunnel(self, mock_run, mock_get_ip):
         mock_get_ip.return_value = "1.2.3.4"
         local_forwards = dict(test_local={"80": "80"})
         remote_forwards = dict(test_remote={"8080": "8080"})
@@ -167,8 +167,8 @@ class TestCore:
             aws_region=REGION,
         )
 
-        mock_exec.assert_called_once()
-        assert mock_exec.call_args[0][1] == [
+        mock_run.assert_called_once()
+        assert mock_run.call_args[0][0] == [
             "sudo",
             "ssh",
             "-v",

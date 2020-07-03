@@ -116,7 +116,9 @@ def start_tunnel(
     logger.warning("Forwarding: ")
     logger.warning("Local: %s", local_forwards)
     logger.warning("Remote: %s", remote_forwards)
-    os.execvp(cmd[0], cmd)
+    # Use `subprocess.run` instead of `os.execvp` because the latter
+    # prints a strange error: `sudo: setrlimit(RLIMIT_STACK): Invalid argument`
+    subprocess.run(cmd, check=True)
 
 
 def import_key(name, file_location, aws_region) -> Dict:
