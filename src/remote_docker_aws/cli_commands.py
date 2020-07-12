@@ -1,29 +1,21 @@
 import click
 import os
 import sys
-from typing import Tuple
+from typing import List, Tuple
 
 from .core import (
-    create_keypair,
-    get_ip,
-    ssh_connect,
-    create_instance,
-    delete_instance,
-    update_instance,
-    start_instance,
-    stop_instance,
-    start_tunnel,
-    sync,
+    create_remote_docker_client,
+    RemoteDockerClient,
 )
 from .config import RemoteDockerConfigProfile
 from .util import logger
 
 
-pass_config = click.make_pass_decorator(RemoteDockerConfigProfile)
+pass_config = click.make_pass_decorator(RemoteDockerClient)
 
 
 def _convert_port_forward_to_dict(
-    config: RemoteDockerConfigProfile, port_forwards: Tuple[str]
+    _client: RemoteDockerClient, port_forwards: Tuple[str]
 ):
     if port_forwards is None:
         return None
@@ -32,7 +24,7 @@ def _convert_port_forward_to_dict(
     for port_forward in port_forwards:
         port_from, port_to = port_forward.split(":")
         ret[port_from] = port_to
-    return ret
+    return dict(cli_port_forward=ret)
 
 
 @click.group()
@@ -71,74 +63,64 @@ def cli(ctx, profile_name, config_path):
         )
         sys.exit(1)
 
-    ctx.obj = config
     logger.debug("Config: %s", config)
+    client = create_remote_docker_client(config)
+    ctx.obj = client
 
 
 @cli.command(name="ssh", help="Connect to the remote agent via SSH")
 @click.argument("ssh_cmd", required=False)
 @click.option("--ssh_options", default=None, help="Pass additional arguments to SSH")
 @pass_config
-def cmd_ssh(config: RemoteDockerConfigProfile, ssh_options=None, ssh_cmd=None):
-    ssh_connect(
-        ssh_key_path=config.key_path,
-        aws_region=config.aws_region,
-        ssh_cmd=ssh_cmd,
-        options=ssh_options,
-    )
+def cmd_ssh(client: RemoteDockerClient, ssh_options=None, ssh_cmd=None):
+    client.ssh_connect(ssh_cmd=ssh_cmd, options=ssh_options)
 
 
 @cli.command(name="start", help="Start the remote agent instance")
 @pass_config
-def cmd_start(config: RemoteDockerConfigProfile):
-    print(start_instance(config.aws_region))
+def cmd_start(client: RemoteDockerClient):
+    print(client.start_instance())
 
 
 @cli.command(name="stop", help="Stop the remote agent instance")
 @pass_config
-def cmd_stop(config: RemoteDockerConfigProfile):
-    print(stop_instance(config.aws_region))
+def cmd_stop(client: RemoteDockerClient):
+    print(client.stop_instance())
 
 
 @cli.command(name="ip", help="Print the IP address of the remote agent")
 @pass_config
-def cmd_ip(config: RemoteDockerConfigProfile):
-    print(get_ip(config.aws_region))
+def cmd_ip(client: RemoteDockerClient):
+    print(client.get_ip())
 
 
 @cli.command(
     name="create-keypair", help="Create and upload a new keypair to AWS for SSH access"
 )
 @pass_config
-def cmd_create_keypair(config: RemoteDockerConfigProfile):
-    create_keypair(config.key_path, config.aws_region)
+def cmd_create_keypair(client: RemoteDockerClient):
+    client.create_keypair()
 
 
 @cli.command(
     name="create", help="Provision a new ec2 instance to use as the remote agent"
 )
 @pass_config
-def cmd_create(config: RemoteDockerConfigProfile):
-    print(
-        create_instance(
-            ssh_key_path=config.key_path,
-            aws_region=config.aws_region,
-            instance_type=config.instance_type,
-        )
-    )
+def cmd_create(client: RemoteDockerClient):
+    print(client.create_instance())
 
 
 @cli.command(name="delete", help="Delete the provisioned ec2 instance")
 @pass_config
-def cmd_delete(config: RemoteDockerConfigProfile):
+def cmd_delete(client: RemoteDockerClient):
     click.confirm("Are you sure you want to delete your instance?", abort=True)
-    print(delete_instance(config.aws_region))
+    print(client.delete_instance())
 
 
 @cli.command(name="update", help="Update the provisioned instance")
 @pass_config
-def cmd_update(config: RemoteDockerConfigProfile):
-    print(update_instance(config.aws_region, config.instance_type))
+def cmd_update(client: RemoteDockerClient):
+    print(client.update_instance())
 
 
 @cli.command(
@@ -163,35 +145,12 @@ def cmd_update(config: RemoteDockerConfigProfile):
     help="Remote port forward: of the form '8080:80'",
 )
 @pass_config
-def cmd_tunnel(config: RemoteDockerConfigProfile, local, remote):
-    if local:
-        config.add_local_port_forwards("cli_option_local", local)
-    if remote:
-        config.add_remote_port_forwards("cli_option_remote", remote)
-
-    start_tunnel(
-        ssh_key_path=config.key_path,
-        local_forwards=config.local_port_forwards,
-        remote_forwards=config.remote_port_forwards,
-        aws_region=config.aws_region,
-    )
+def cmd_tunnel(client: RemoteDockerClient, local, remote):
+    client.start_tunnel(extra_local_forwards=local, extra_remote_forwards=remote)
 
 
 @cli.command(name="sync", help="Sync the given directories with the remote instance")
 @click.argument("directory", nargs=-1)
 @pass_config
-def cmd_sync(config: RemoteDockerConfigProfile, directory):
-    if directory:
-        config.add_watched_directories(directory)
-    try:
-        config.watched_directories
-    except KeyError:
-        print("Need at least one directory")
-        sys.exit(1)
-
-    sync(
-        dirs=config.watched_directories,
-        ssh_key_path=config.key_path,
-        sync_ignore_patterns_git=config.sync_ignore_patterns_git,
-        aws_region=config.aws_region,
-    )
+def cmd_sync(client: RemoteDockerClient, directory: List[str]):
+    client.sync(extra_sync_dirs=directory)

@@ -1,3 +1,5 @@
+import os
+import pathlib
 from typing import Dict
 
 
@@ -8,6 +10,8 @@ INSTANCE_USERNAME = "ubuntu"
 # Used to identify the ec2 instance
 INSTANCE_SERVICE_NAME = "remote-docker-ec2-agent"
 INSTANCE_TYPE_DEFAULT = "t2.medium"
+SCEPTRE_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), "sceptre")
+SCEPTRE_PROJECT_CODE = "remote-docker"
 
 
 # Looked up via https://cloud-images.ubuntu.com/locator/ec2/

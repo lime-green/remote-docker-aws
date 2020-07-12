@@ -2,7 +2,13 @@ import json
 import os
 from typing import Dict, List
 
-from .constants import INSTANCE_TYPE_DEFAULT, PORT_MAP_TYPE
+from .constants import (
+    KEY_PAIR_NAME,
+    INSTANCE_SERVICE_NAME,
+    INSTANCE_TYPE_DEFAULT,
+    PORT_MAP_TYPE,
+    SCEPTRE_PROJECT_CODE,
+)
 
 
 _UNSET = object()
@@ -126,21 +132,31 @@ class RemoteDockerConfigProfile(JSONConfigWithProfile):
     def watched_directories(self) -> List[str]:
         return [
             os.path.expanduser(watched_dir)
-            for watched_dir in self.get_attribute("watched_directories")
+            for watched_dir in self.get_attribute("watched_directories", [])
         ]
 
     @property
     def instance_type(self) -> str:
         return self.get_attribute("instance_type", INSTANCE_TYPE_DEFAULT)
 
-    def add_watched_directories(self, dirs: List[str]):
-        self.config_dict.setdefault("watched_directories", [])
-        self.config_dict["watched_directories"].extend(dirs)
+    @property
+    def key_pair_name(self) -> str:
+        if not self.user_id:
+            return KEY_PAIR_NAME
+        return f"{KEY_PAIR_NAME}-{self.user_id}"
 
-    def add_local_port_forwards(self, key: str, local_port_forwards: Dict):
-        self.config_dict.setdefault("local_port_forwards", {})
-        self.config_dict["local_port_forwards"][key] = local_port_forwards
+    @property
+    def instance_service_name(self) -> str:
+        if not self.user_id:
+            return INSTANCE_SERVICE_NAME
+        return f"{INSTANCE_SERVICE_NAME}-{self.user_id}"
 
-    def add_remote_port_forwards(self, key: str, remote_port_forwards: Dict):
-        self.config_dict.setdefault("remote_port_forwards", {})
-        self.config_dict["remote_port_forwards"][key] = remote_port_forwards
+    @property
+    def project_code(self) -> str:
+        if not self.user_id:
+            return SCEPTRE_PROJECT_CODE
+        return f"{SCEPTRE_PROJECT_CODE}-{self.user_id}"
+
+    @property
+    def user_id(self) -> str:
+        return self.get_attribute("user_id", None)
