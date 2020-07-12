@@ -1,7 +1,7 @@
 import click
 import os
 import sys
-from typing import List, Tuple
+from typing import Tuple
 
 from .core import (
     create_remote_docker_client,
@@ -152,5 +152,5 @@ def cmd_tunnel(client: RemoteDockerClient, local, remote):
 @cli.command(name="sync", help="Sync the given directories with the remote instance")
 @click.argument("directory", nargs=-1)
 @pass_config
-def cmd_sync(client: RemoteDockerClient, directory: List[str]):
-    client.sync(extra_sync_dirs=directory)
+def cmd_sync(client: RemoteDockerClient, directory: Tuple[str]):
+    client.sync(extra_sync_dirs=list(directory))

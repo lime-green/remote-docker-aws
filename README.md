@@ -190,6 +190,11 @@ The current configurable values are:
   - defaults to: `[]`
   - use `.gitignore` syntax, and make sure to use the directory wildcard as needed
 
+#### `user_id`
+  - defaults to `None`
+  - Used to uniquely identify the instance, this is useful if multiple remote-docker agents
+  will be created in the same AWS account
+
 #### `watched_directories`
  - defaults to: `[]`
  - list of paths to watch by `rd sync`
