@@ -12,7 +12,6 @@ from remote_docker_aws.config import RemoteDockerConfigProfile
 from remote_docker_aws.core import (
     create_remote_docker_client,
     get_ec2_client,
-    RemoteDockerClient,
 )
 
 
@@ -70,18 +69,20 @@ def fix_dependency_conflict():
 class TestCore:
     @pytest.fixture
     def remote_docker_client(self):
-        return RemoteDockerClient(
-            project_code="mock_project",
-            aws_region=REGION,
-            instance_service_name="mock_instance",
-            instance_type="c4.xlarge",
-            local_forwards=dict(test_local={"80": "80"}),
-            remote_forwards=dict(test_remote={"8080": "8080"}),
-            ssh_key_path=KEY_PATH,
-            ssh_key_pair_name="mock_key_pair_name",
-            sync_dirs=["/fake/dir"],
-            sync_ignore_patterns=["test.py"],
+        config = RemoteDockerConfigProfile(
+            config_dict=dict(
+                project_code="mock_project",
+                aws_region=REGION,
+                instance_service_name="mock_instance",
+                instance_type="c4.xlarge",
+                local_port_forwards=dict(test_local={"80": "80"}),
+                remote_port_forwards=dict(test_remote={"8080": "8080"}),
+                key_path=KEY_PATH,
+                watched_directories=["/fake/dir"],
+                sync_ignore_patterns_git=["test.py"],
+            )
         )
+        return create_remote_docker_client(config)
 
     def test_get_ip_when_no_instances_running(self, remote_docker_client):
         with pytest.raises(RuntimeError) as exc:
@@ -214,9 +215,4 @@ class TestCore:
         key_pairs = get_ec2_client(REGION).describe_key_pairs()["KeyPairs"]
         assert len(key_pairs) == 1
         key_pair = key_pairs[0]
-        assert key_pair["KeyName"] == "mock_key_pair_name"
-
-    def test_it_creates_client_from_config(self):
-        config = RemoteDockerConfigProfile(config_dict=dict(aws_region=REGION))
-        client = create_remote_docker_client(config)
-        assert isinstance(client, RemoteDockerClient)
+        assert key_pair["KeyName"] == "remote-docker-keypair"
