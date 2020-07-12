@@ -46,6 +46,11 @@ def test_settings_with_defaults():
     assert config.local_port_forwards == {}
     assert config.remote_port_forwards == {}
     assert config.sync_ignore_patterns_git == []
+    assert config.user_id is None
+    assert config.key_pair_name == "remote-docker-keypair"
+    assert config.instance_service_name == "remote-docker-ec2-agent"
+    assert config.project_code == "remote-docker"
+    assert config.watched_directories == []
 
 
 def test_settings_with_no_defaults():
@@ -56,9 +61,6 @@ def test_settings_with_no_defaults():
 
     with pytest.raises(KeyError):
         config.aws_region
-
-    with pytest.raises(KeyError):
-        config.watched_directories
 
 
 @mock.patch.dict(
@@ -76,6 +78,7 @@ def test_settings_with_profile():
         "key_path": "~/mock_key_path",
         "local_port_forwards": {"base": {"443": "443", "80": "80"}},
         "sync_ignore_patterns_git": ["test.py"],
+        "user_id": "jon_smith",
         "default_profile": "test_profile",
         "profiles": {
             "test_profile": {
@@ -95,23 +98,9 @@ def test_settings_with_profile():
     }
     assert config.sync_ignore_patterns_git == ["test.py", "test2.py"]
     assert config.remote_port_forwards == {"local-webpack-app": {"8080": "8080"}}
+    assert config.user_id == "jon_smith"
 
-
-def test_settings_that_can_be_extended():
-    config_dict = {
-        "local_port_forwards": {"db": {3306: 3306}},
-        "watched_directories": ["/projects/blog"],
-    }
-    config = RemoteDockerConfigProfile(config_dict)
-
-    assert config.watched_directories == config_dict["watched_directories"]
-    config.add_watched_directories(["/projects/blog2"])
-    assert config.watched_directories == ["/projects/blog", "/projects/blog2"]
-
-    assert config.local_port_forwards == config_dict["local_port_forwards"]
-    config.add_local_port_forwards("test", {3000: 3000})
-    assert config.local_port_forwards == {"db": {3306: 3306}, "test": {3000: 3000}}
-
-    assert config.remote_port_forwards == {}
-    config.add_remote_port_forwards("test", {8080: 8080})
-    assert config.remote_port_forwards == {"test": {8080: 8080}}
+    user_id = "jon_smith"
+    assert config.key_pair_name == f"remote-docker-keypair-{user_id}"
+    assert config.instance_service_name == f"remote-docker-ec2-agent-{user_id}"
+    assert config.project_code == f"remote-docker-{user_id}"
