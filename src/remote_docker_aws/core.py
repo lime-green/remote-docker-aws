@@ -265,17 +265,16 @@ class RemoteDockerClient:
 
     def create_keypair(self) -> Dict:
         path = self.ssh_key_path
+        # shell=True with `ssh-keygen` doesn't seem to be passing path correctly
         subprocess.run(
             shlex.split(f"ssh-keygen -t rsa -b 4096 -f {path}"),
             check=True,
-            shell=True,
             stdout=sys.stdout,
             stderr=sys.stderr,
         )
         subprocess.run(
             shlex.split(f"ssh-add -K {path}"),
             check=True,
-            shell=True,
             stdout=sys.stdout,
             stderr=sys.stderr,
         )
