@@ -40,7 +40,6 @@ class RemoteDockerClient:
         ssh_key_pair_name: str,
         sync_dirs: List[str],
         sync_ignore_patterns: List[str],
-        sceptre_path: str,
     ):
         self.project_code = project_code
         self.aws_region = aws_region
@@ -52,10 +51,9 @@ class RemoteDockerClient:
         self.ssh_key_pair_name = ssh_key_pair_name
         self.sync_dirs = sync_dirs
         self.sync_ignore_patterns = sync_ignore_patterns
-        self.sceptre_path = sceptre_path
 
     @classmethod
-    def from_config(cls, config: RemoteDockerConfigProfile, sceptre_path: str):
+    def from_config(cls, config: RemoteDockerConfigProfile):
         return cls(
             project_code=config.project_code,
             aws_region=config.aws_region,
@@ -67,7 +65,6 @@ class RemoteDockerClient:
             ssh_key_pair_name=config.key_pair_name,
             sync_dirs=config.watched_directories,
             sync_ignore_patterns=config.sync_ignore_patterns_git,
-            sceptre_path=sceptre_path,
         )
 
     @property
@@ -170,7 +167,7 @@ class RemoteDockerClient:
 
     def _get_sceptre_plan(self) -> SceptrePlan:
         context = SceptreContext(
-            self.sceptre_path,
+            SCEPTRE_PATH,
             "dev/application.yaml",
             user_variables=dict(
                 key_pair_name=self.ssh_key_pair_name,
@@ -356,4 +353,4 @@ class RemoteDockerClient:
 def create_remote_docker_client(
     config: RemoteDockerConfigProfile,
 ) -> RemoteDockerClient:
-    return RemoteDockerClient.from_config(config, SCEPTRE_PATH)
+    return RemoteDockerClient.from_config(config)

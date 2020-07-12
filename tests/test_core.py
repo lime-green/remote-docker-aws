@@ -8,7 +8,6 @@ from unittest import mock
 import pytest
 from moto import mock_cloudformation, mock_ec2
 
-from remote_docker_aws.constants import SCEPTRE_PATH
 from remote_docker_aws.config import RemoteDockerConfigProfile
 from remote_docker_aws.core import (
     create_remote_docker_client,
@@ -82,7 +81,6 @@ class TestCore:
             ssh_key_pair_name="mock_key_pair_name",
             sync_dirs=["/fake/dir"],
             sync_ignore_patterns=["test.py"],
-            sceptre_path=SCEPTRE_PATH,
         )
 
     def test_get_ip_when_no_instances_running(self, remote_docker_client):
