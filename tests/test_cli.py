@@ -58,7 +58,6 @@ class TestCLICommandsWithMoto:
                 else:
                     result = cli_runner.invoke(cli, ["create"])
 
-                print(result.__dict__)
                 assert result.exit_code == 0
                 return result
 
