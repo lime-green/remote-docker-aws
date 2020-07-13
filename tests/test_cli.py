@@ -13,9 +13,6 @@ from remote_docker_aws.config import RemoteDockerConfigProfile
 
 patch_exec = mock.patch("os.execvp", autospec=True)
 patch_run = mock.patch("subprocess.run", autospec=True)
-patch_get_ip = mock.patch(
-    "remote_docker_aws.core.RemoteDockerClient.get_ip", autospec=True
-)
 
 
 def test_cli_entrypoint_runs_successfully():
