@@ -96,7 +96,7 @@ class TestCLICommandsWithMoto:
         with instance():
             result = cli_runner.invoke(cli, ["ssh"])
         assert result.exit_code == 0
-        mock_exec.assert_called()
+        mock_exec.assert_called_once()
 
     def test_start(self, cli_runner, instance):
         with instance():
