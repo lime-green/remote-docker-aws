@@ -4,7 +4,7 @@ from unittest import mock
 import pytest
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="function")
 def ensure_aws_is_mocked():
     if os.environ.get("AWS_PROFILE"):
         del os.environ["AWS_PROFILE"]
@@ -23,7 +23,7 @@ def ensure_aws_is_mocked():
         yield
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="function")
 def ensure_sleep_is_mocked():
     with mock.patch("time.sleep"):
         yield
