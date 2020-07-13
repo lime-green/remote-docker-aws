@@ -7,6 +7,7 @@ from functools import lru_cache
 from typing import Dict, List
 
 import boto3
+from sceptre.cli.helpers import setup_logging
 from sceptre.context import SceptreContext
 from sceptre.plan.plan import SceptrePlan
 from unison_gitignore.parser import GitIgnoreToUnisonIgnore
@@ -20,6 +21,9 @@ from .constants import (
     SCEPTRE_PATH,
 )
 from .util import get_replica_and_sync_paths_for_unison, logger, wait_until_port_is_open
+
+
+setup_logging(debug=False, no_colour=False)
 
 
 @lru_cache(maxsize=128)
@@ -159,6 +163,7 @@ class RemoteDockerClient:
         with open(file_location, "r") as fh:
             file_bytes = fh.read().strip().encode("utf-8")
 
+        self.ec2_client.delete_key_pair(KeyName=self.ssh_key_pair_name,)
         return self.ec2_client.import_key_pair(
             KeyName=self.ssh_key_pair_name,
             # Documentation is lying, shouldn't be b64 encoded...
