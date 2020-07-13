@@ -1,6 +1,5 @@
 import click
 import os
-import sys
 from typing import Tuple
 
 from .core import (
@@ -47,25 +46,16 @@ def cli(ctx, profile_name, config_path):
         aws_profile = config.aws_profile
         os.environ["AWS_PROFILE"] = aws_profile
     except KeyError:
-        print(
-            "Missing aws_profile config option."
-            " Provide via `AWS_PROFILE` env-var or add it to your config"
-        )
-        sys.exit(1)
+        pass
 
     try:
         aws_region = config.aws_region
         os.environ["AWS_REGION"] = aws_region
     except KeyError:
-        print(
-            "Missing aws_region config option."
-            " Provide via `AWS_REGION` env-var or add it to your config"
-        )
-        sys.exit(1)
+        pass
 
     logger.debug("Config: %s", config)
-    client = create_remote_docker_client(config)
-    ctx.obj = client
+    ctx.obj = create_remote_docker_client(config)
 
 
 @cli.command(name="ssh", help="Connect to the remote agent via SSH")
@@ -150,7 +140,7 @@ def cmd_tunnel(client: RemoteDockerClient, local, remote):
 
 
 @cli.command(name="sync", help="Sync the given directories with the remote instance")
-@click.argument("directory", nargs=-1)
+@click.argument("directories", nargs=-1)
 @pass_config
-def cmd_sync(client: RemoteDockerClient, directory: Tuple[str]):
-    client.sync(extra_sync_dirs=list(directory))
+def cmd_sync(client: RemoteDockerClient, directories: Tuple[str]):
+    client.sync(extra_sync_dirs=list(directories))
