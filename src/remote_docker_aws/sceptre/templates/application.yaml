@@ -25,6 +25,8 @@ Resources:
         - !Ref InstanceSecurityGroup
       KeyName: !Ref KeyName
       Tags:
+        - Key: "Name"
+          Value: !Ref ServiceName
         - Key: "service"
           Value: !Ref ServiceName
   InstanceSecurityGroup:
