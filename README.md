@@ -3,16 +3,16 @@
 
 Why is this useful?
 
-So that your local machine can be dedicated to useful tasks
-such as running your code editor, browser, email, etc. leaving the docker-running
-to machines dedicated for this, and so your local machine functions better and faster.
-Docker also runs much more efficiently on Linux
-than macOS, so this is particularly useful for mac users
+Frees up your local machine for useful tasks
+such as running your code editor, browser, and email, leaving running Docker to a dedicated server instance.
+The result is that your local machine functions faster, uses up less disk space, and consumes less power.
+MacOS users will also see noticeable speed improvements since Linux on Docker (which is
+what the remote hosts runs) is much more performant.
 
-Downsides:
-- SSH tunnel communication vs. local communication: use an aws-region with lowest ping for you using [this site](https://ping.psa.fun/) or [this site](https://www.cloudping.info/)
-- Some more setup required (tunneling, file watcher, config)
-- Cost, although it only costs me  around 5 cents / hour
+The downsides:
+- SSH tunnel communication is slower than local communication. However using an AWS region with low ping makes the latency unnoticeable. Find the region fastest for you using [this site](https://ping.psa.fun/) or [this site](https://www.cloudping.info/)
+- Some more setup required to get everything configured properly and running (tunneling ports, syncing file changes)
+- Running the ec2 instance incurs an additional cost over running locally, although it a t2.medium instance in Canada costs around 5 cents/hour
 
 ## Setup
 1. First setup your aws-cli to connect to your AWS profile,
@@ -40,9 +40,10 @@ and [create access keys to access AWS through the CLI](https://docs.aws.amazon.c
     ```bash
    pipx install remote-docker-aws
 
-   # Install filewatcher utilities
+   # Install unison sync utility
    brew install unison
 
+   # Install file-watcher driver for unison      
    # On MacOS:
    brew install autozimu/homebrew-formulas/unison-fsmonitor
 
@@ -89,6 +90,10 @@ Note: QUIT Docker Desktop (or any local docker-agent equivalent) when using the 
     # Add any more paths you need to sync here, or add them to the config file
     # You will need to sync directories that are mounted as volumes by docker
     rd sync ~/blog
+
+    # If watched directories are supplied in ~/.remote-docker.config.json
+    # then simply call:
+    rd sync
     ```
 
 1. Make sure to set `DOCKER_HOST`:
@@ -108,7 +113,7 @@ Note: QUIT Docker Desktop (or any local docker-agent equivalent) when using the 
 1. Develop and code! All services should be accessible and usable as usual
 as long as you are running `rd tunnel` and are forwarding the ports you need
 
-1. When you're done for the day don't forget to stop the instance to save $:
+1. When you're done for the day don't forget to stop the instance to save money:
     ```bash
     rd stop
     ```
@@ -208,16 +213,17 @@ rd update
 rd ssh "sudo growpart /dev/xvda 1 && sudo resize2fs /dev/xvda1"
 ```
 
- Profiles are a way to organize and override settings for different projects.
+---
 
- All the config settings are the same and profile values are prioritized:
- lists are appended and dicts are shallow-merged, otherwise the profile value is used
+Profiles are a way to organize and override settings for different projects.
+Values nested in a profile override the values defined outside a profile, 
+except for lists and dictionaries which are merged to the values outside the profile
 
 
 ## Cost
 A t2.medium instance on ca-central-1 currently costs $0.051 /hour. [See current prices](https://aws.amazon.com/ec2/pricing/on-demand/)
 
-Nothing else used should incur any cost with reasonable usage, and so far for my usage -- however, please monitor!
+Nothing else used should incur any cost with reasonable usage
 
 ## Notes
 - See `rd --help` for more information on the commands available
