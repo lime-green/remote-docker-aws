@@ -10,7 +10,7 @@ if exists(readme_path):
 else:
     long_description = ""
 
-INSTALL_REQUIRES = ("boto3", "sceptre>=2.3", "click", "unison-gitignore")
+INSTALL_REQUIRES = ("boto3", "sceptre>=2.3", "click", "unison-gitignore>=1.0.0")
 
 
 setup(
