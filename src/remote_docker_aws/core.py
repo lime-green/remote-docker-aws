@@ -4,7 +4,7 @@ import subprocess
 import sys
 import time
 from functools import lru_cache
-from typing import Dict, List, Union
+from typing import Dict, List
 
 import boto3
 from sceptre.cli.helpers import setup_logging
@@ -297,12 +297,11 @@ class RemoteDockerClient:
         sync_paths: List[str],
         force: bool = False,
         repeat_watch: bool = False,
-        return_as_str: bool = False,
-    ) -> Union[str, List[str]]:
-        cmd_s = (
-            f"unison-gitignore {replica_path} 'ssh://{INSTANCE_USERNAME}@{ip}/{replica_path}'"
-            f" -prefer {replica_path} -batch -sshargs '-i {self.ssh_key_path}'"
-        )
+    ) -> List[str]:
+        cmd_s = f"""
+        unison-gitignore {replica_path} 'ssh://{INSTANCE_USERNAME}@{ip}/{replica_path}'
+        -prefer {replica_path} -batch -sshargs '-i {self.ssh_key_path}'
+        """
 
         parser = GitIgnoreToUnisonIgnore("/")
         unison_patterns = parser.parse_gitignore(self.sync_ignore_patterns)
@@ -317,9 +316,7 @@ class RemoteDockerClient:
         if repeat_watch:
             cmd_s += " -repeat watch"
 
-        if return_as_str:
-            return cmd_s
-        return shlex.split(cmd_s)
+        return shlex.split(cmd_s.replace("\n", ""))
 
     def sync(
         self, *, extra_sync_dirs: List[str] = None,
@@ -344,14 +341,9 @@ class RemoteDockerClient:
         logger.info("Pushing local files to remote server")
         subprocess.run(
             self._get_unison_cmd(
-                ip=ip,
-                replica_path=replica_path,
-                sync_paths=sync_paths,
-                force=True,
-                return_as_str=True,
+                ip=ip, replica_path=replica_path, sync_paths=sync_paths, force=True,
             ),
             check=True,
-            shell=True,
         )
 
         # Then watch for update

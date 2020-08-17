@@ -140,7 +140,7 @@ class TestCore:
             "-p",
             "/fake/dir",
         ]
-        expected_unison_cmd_as_list = [
+        expected_unison_cmd = [
             "unison-gitignore",
             "/fake",
             "ssh://ubuntu@1.2.3.4//fake",
@@ -155,17 +155,12 @@ class TestCore:
             "-force",
             "/fake",
         ]
-        expected_unison_cmd_as_str = (
-            "unison-gitignore /fake 'ssh://ubuntu@1.2.3.4//fake' -prefer"
-            " /fake -batch -sshargs '-i /fake_key_path'"
-            r' "-ignore=Regex ^(.+/)?test\\.py(/.*)?$" -path dir -force /fake'
-        )
-        assert call_2[0][0] == expected_unison_cmd_as_str
+        assert call_2[0][0] == expected_unison_cmd
 
         mock_execvp.assert_called_once()
-        assert mock_execvp.call_args[0][0] == "unison-gitignore"
+        assert mock_execvp.call_args[0][0] == expected_unison_cmd[0]
         assert mock_execvp.call_args[0][1] == [
-            *expected_unison_cmd_as_list[:-2],
+            *expected_unison_cmd[:-2],
             "-repeat",
             "watch",
         ]
