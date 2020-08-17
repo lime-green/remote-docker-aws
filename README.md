@@ -21,7 +21,7 @@ The downsides:
     - AmazonEC2FullAccess
     - AWSCloudFormationFullAccess
 
-And now in your terminal:
+    And now in your terminal:
 
     ```bash
     # Replace josh with your name
