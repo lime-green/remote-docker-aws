@@ -86,11 +86,6 @@ class TestCLICommandsWithMoto:
         create_instance()
         delete_instance()
 
-    def test_update(self, cli_runner, instance):
-        with instance():
-            result = cli_runner.invoke(cli, ["update"])
-        assert result.exit_code == 0
-
     @patch_exec
     def test_ssh(self, mock_exec, cli_runner, instance):
         with instance():

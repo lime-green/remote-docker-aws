@@ -107,12 +107,6 @@ def cmd_delete(client: RemoteDockerClient):
     print(client.delete_instance())
 
 
-@cli.command(name="update", help="Update the provisioned instance")
-@pass_config
-def cmd_update(client: RemoteDockerClient):
-    print(client.update_instance())
-
-
 @cli.command(
     name="tunnel",
     help=(

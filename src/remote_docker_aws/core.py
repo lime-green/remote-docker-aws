@@ -134,10 +134,10 @@ class RemoteDockerClient:
         remote_forwards = dict(self.remote_forwards, **extra_remote_forwards)
 
         ip = self.get_ip()
-        cmd_s = f"""
-        sudo ssh -v -o StrictHostKeyChecking=no -o "ServerAliveInterval=60" -N -T
-         -i {self.ssh_key_path} {INSTANCE_USERNAME}@{ip}
-        """
+        cmd_s = (
+            'sudo ssh -v -o StrictHostKeyChecking=no -o "ServerAliveInterval=60" -N -T'
+            f" -i {self.ssh_key_path} {INSTANCE_USERNAME}@{ip}"
+        )
 
         for port_from, port_to in DOCKER_PORT_FORWARD.items():
             cmd_s += f" -L localhost:{port_from}:localhost:{port_to}"
@@ -212,15 +212,6 @@ class RemoteDockerClient:
         logger.warning("Starting bootstrap")
         self.bootstrap_instance()
 
-    def update_instance(self) -> Dict:
-        logger.warning("Updating instance")
-        result = self._get_sceptre_plan().update()
-
-        logger.debug("Got sceptre result: %s", result)
-        if "complete" not in result.values():
-            raise Exception(f"sceptre command failed: {list(result.values())}")
-        return result
-
     def delete_instance(self) -> Dict:
         logger.warning("Deleting instance")
         result = self._get_sceptre_plan().delete()
@@ -234,10 +225,10 @@ class RemoteDockerClient:
         ssh_cmd = ssh_cmd if ssh_cmd else ""
         options = options if options else ""
 
-        cmd_s = f"""
-        ssh -o StrictHostKeyChecking=no -i {self.ssh_key_path}
-        {options} {INSTANCE_USERNAME}@{self.get_ip()} {ssh_cmd}
-        """
+        cmd_s = (
+            f"ssh -o StrictHostKeyChecking=no -i {self.ssh_key_path}"
+            f" {options} {INSTANCE_USERNAME}@{self.get_ip()} {ssh_cmd}"
+        )
 
         return shlex.split(cmd_s)
 
@@ -298,10 +289,10 @@ class RemoteDockerClient:
         force: bool = False,
         repeat_watch: bool = False,
     ) -> List[str]:
-        cmd_s = f"""
-        unison-gitignore {replica_path} 'ssh://{INSTANCE_USERNAME}@{ip}/{replica_path}'
-        -prefer {replica_path} -batch -sshargs '-i {self.ssh_key_path}'
-        """
+        cmd_s = (
+            f"unison-gitignore {replica_path} 'ssh://{INSTANCE_USERNAME}@{ip}/{replica_path}'"
+            f" -prefer {replica_path} -batch -sshargs '-i {self.ssh_key_path}'"
+        )
 
         parser = GitIgnoreToUnisonIgnore("/")
         unison_patterns = parser.parse_gitignore(self.sync_ignore_patterns)
