@@ -12,7 +12,7 @@ what the remote hosts runs) is much more performant.
 The downsides:
 - SSH tunnel communication is slower than local communication. However using an AWS region with low ping makes the latency unnoticeable. Find the region fastest for you using [this site](https://ping.psa.fun/) or [this site](https://www.cloudping.info/)
 - Some more setup required to get everything configured properly and running (tunneling ports, syncing file changes)
-- Running the ec2 instance incurs an additional cost over running locally, although it a t2.medium instance in Canada costs around 5 cents/hour
+- Running the ec2 instance incurs an additional cost over running locally, although a t2.medium instance in Canada only costs about 5 cents/hour
 
 ## Setup
 1. First setup your aws-cli to connect to your AWS profile,
