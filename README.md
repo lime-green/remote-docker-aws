@@ -15,12 +15,13 @@ The downsides:
 - Running the ec2 instance incurs an additional cost over running locally, although a t2.medium instance in Canada only costs about 5 cents/hour
 
 ## Setup
-1. First setup your aws-cli to connect to your AWS profile,
-and [create access keys to access AWS through the CLI](https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html)
+1. First login to your AWS account and [create access keys to access AWS through the CLI](https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html)
 
     You will need the following IAM policies:
     - AmazonEC2FullAccess
     - AWSCloudFormationFullAccess
+
+And now in your terminal:
 
     ```bash
     # Replace josh with your name
