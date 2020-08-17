@@ -51,6 +51,7 @@ def test_settings_with_defaults():
     assert config.instance_service_name == "remote-docker-ec2-agent"
     assert config.project_code == "remote-docker"
     assert config.watched_directories == []
+    assert config.volume_size == 30
 
 
 def test_settings_with_no_defaults():
@@ -79,6 +80,7 @@ def test_settings_with_profile():
         "local_port_forwards": {"base": {"443": "443", "80": "80"}},
         "sync_ignore_patterns_git": ["test.py"],
         "user_id": "jon_smith",
+        "volume_size": 40,
         "default_profile": "test_profile",
         "profiles": {
             "test_profile": {
@@ -104,3 +106,4 @@ def test_settings_with_profile():
     assert config.key_pair_name == f"remote-docker-keypair-{user_id}"
     assert config.instance_service_name == f"remote-docker-ec2-agent-{user_id}"
     assert config.project_code == f"remote-docker-{user_id}"
+    assert config.volume_size == 40

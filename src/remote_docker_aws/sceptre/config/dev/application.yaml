@@ -4,3 +4,4 @@ parameters:
   KeyName: {{ var.key_pair_name }}
   ServiceName: {{ var.service_name }}
   ImageId: {{ var.image_id }}
+  VolumeSize: "{{ var.volume_size }}"

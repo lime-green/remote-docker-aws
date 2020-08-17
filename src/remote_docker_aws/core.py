@@ -44,6 +44,7 @@ class RemoteDockerClient:
         ssh_key_pair_name: str,
         sync_dirs: List[str],
         sync_ignore_patterns: List[str],
+        volume_size: int,
     ):
         self.project_code = project_code
         self.aws_region = aws_region
@@ -55,6 +56,7 @@ class RemoteDockerClient:
         self.ssh_key_pair_name = ssh_key_pair_name
         self.sync_dirs = sync_dirs
         self.sync_ignore_patterns = sync_ignore_patterns
+        self.volume_size = volume_size
 
     @classmethod
     def from_config(cls, config: RemoteDockerConfigProfile):
@@ -69,6 +71,7 @@ class RemoteDockerClient:
             ssh_key_pair_name=config.key_pair_name,
             sync_dirs=config.watched_directories,
             sync_ignore_patterns=config.sync_ignore_patterns_git,
+            volume_size=config.volume_size,
         )
 
     @property
@@ -181,6 +184,7 @@ class RemoteDockerClient:
                 project_code=self.project_code,
                 region=self.aws_region,
                 service_name=self.instance_service_name,
+                volume_size=int(self.volume_size),
             ),
         )
         return SceptrePlan(context)

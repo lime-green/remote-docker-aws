@@ -9,6 +9,8 @@ Parameters:
     Type: String
   ImageId:
     Type: String
+  VolumeSize:
+    Type: Number
 
 Resources:
   Instance:
@@ -17,7 +19,7 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
-            VolumeSize: 25
+            VolumeSize: !Ref VolumeSize
 
       InstanceType: !Ref InstanceType
       ImageId: !Ref ImageId

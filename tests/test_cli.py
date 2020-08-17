@@ -117,7 +117,8 @@ class TestCLICommandsWithMoto:
     @patch_run
     def test_create_keypair(self, mock_run, cli_runner, instance):
         with instance():
-            cli_runner.invoke(cli, ["create-keypair"])
+            result = cli_runner.invoke(cli, ["create-keypair"])
+        assert result.exit_code == 0
         assert mock_run.call_count == 2
 
     @pytest.mark.parametrize("local,remote", [(None, None), ("80:80", "3300:3300")])
