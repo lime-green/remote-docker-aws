@@ -8,6 +8,7 @@ from .constants import (
     INSTANCE_TYPE_DEFAULT,
     PORT_MAP_TYPE,
     SCEPTRE_PROJECT_CODE,
+    VOLUME_SIZE_DEFAULT,
 )
 
 
@@ -160,3 +161,7 @@ class RemoteDockerConfigProfile(JSONConfigWithProfile):
     @property
     def user_id(self) -> str:
         return self.get_attribute("user_id", None)
+
+    @property
+    def volume_size(self) -> int:
+        return self.get_attribute("volume_size", VOLUME_SIZE_DEFAULT)

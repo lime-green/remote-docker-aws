@@ -199,6 +199,16 @@ The current configurable values are:
  - defaults to: `[]`
  - list of paths to watch by `rd sync`
 
+#### `volume_size`
+ - defaults to: `30` (GB)
+ - Size of the ec2 volume.
+
+ If you update `volume_size` after your instance has been created, then do this to update:
+ ```
+rd update
+rd ssh "sudo growpart /dev/xvda 1 && sudo resize2fs /dev/xvda1"
+```
+
  Profiles are a way to organize and override settings for different projects.
 
  All the config settings are the same and profile values are prioritized:
