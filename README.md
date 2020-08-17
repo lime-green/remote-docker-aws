@@ -33,9 +33,9 @@ and [create access keys to access AWS through the CLI](https://docs.aws.amazon.c
 
 1. Install pre-requisites
 
-   Have [pipx](https://github.com/pipxproject/pipx)
-
    Have [Homebrew](https://brew.sh/) (Available on both macOS and Linux now!)
+   
+   Have [pipx](https://github.com/pipxproject/pipx)
 
     ```bash
    pipx install remote-docker-aws
