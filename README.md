@@ -39,7 +39,6 @@ and [create access keys to access AWS through the CLI](https://docs.aws.amazon.c
 
     ```bash
    pipx install remote-docker-aws
-   pipx install unison-gitignore
 
    # Install filewatcher utilities
    brew install unison
