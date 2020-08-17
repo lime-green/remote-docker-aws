@@ -110,6 +110,11 @@ def cmd_delete(client: RemoteDockerClient):
 @cli.command(name="update", help="Update the provisioned instance")
 @pass_config
 def cmd_update(client: RemoteDockerClient):
+    prompt = (
+        "Are you sure you want to update your instance?"
+        " This can have potential destructive consequences so only continue if you are sure"
+    )
+    click.confirm(prompt, abort=True)
     print(client.update_instance())
 
 

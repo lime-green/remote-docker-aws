@@ -88,7 +88,7 @@ class TestCLICommandsWithMoto:
 
     def test_update(self, cli_runner, instance):
         with instance():
-            result = cli_runner.invoke(cli, ["update"])
+            result = cli_runner.invoke(cli, ["update"], input="y")
         assert result.exit_code == 0
 
     @patch_exec
