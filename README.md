@@ -209,11 +209,14 @@ The current configurable values are:
  - defaults to: `30` (GB)
  - Size of the ec2 volume.
 
- If you update `volume_size` after your instance has been created, then do this to update:
+ If you update `volume_size` after your instance has been created, then 
+ performing an update will re-create the instance which might not be desired since it will wipe your volume.
+ In this case, you can recreate your instance (`rd delete && rd create`), or [backup your volume](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html) and run:
  ```
-rd update
-rd ssh "sudo growpart /dev/xvda 1 && sudo resize2fs /dev/xvda1"
-```
+ rd update
+ rd ssh "sudo growpart /dev/xvda 1 && sudo resize2fs /dev/xvda1"
+ ```
+ after which you can restore from your snapshot
 
 ---
 
