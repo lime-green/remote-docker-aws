@@ -40,6 +40,7 @@ The downsides:
 
     ```bash
    pipx install remote-docker-aws
+   pipx install unison-gitignore
 
    # Install unison sync utility
    brew install unison
