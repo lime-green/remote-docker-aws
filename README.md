@@ -213,7 +213,7 @@ The current configurable values are:
 
 Profiles are a way to organize and override settings for different projects.
 Values nested in a profile override the values defined outside a profile,
-except for lists and dictionaries which are merged to the values outside the profile
+except for lists and dictionaries which are merged with the values outside the profile
 
 
 ## Cost
