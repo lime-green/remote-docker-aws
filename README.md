@@ -6,7 +6,7 @@ Why is this useful?
 Frees up your local machine for useful tasks
 such as running your code editor, browser, and email, leaving running Docker to a dedicated server instance.
 The result is that your local machine functions faster, uses up less disk space, and consumes less power.
-MacOS users will also see noticeable speed improvements since Linux on Docker (which is
+MacOS users will also see noticeable speed improvements since Docker on Linux (which is
 what the remote hosts runs) is much more performant.
 
 The downsides:
