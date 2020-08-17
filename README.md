@@ -35,7 +35,7 @@ The downsides:
 1. Install pre-requisites
 
    Have [Homebrew](https://brew.sh/) (Available on both macOS and Linux now!)
-   
+
    Have [pipx](https://github.com/pipxproject/pipx)
 
     ```bash
@@ -45,7 +45,7 @@ The downsides:
    # Install unison sync utility
    brew install unison
 
-   # Install file-watcher driver for unison      
+   # Install file-watcher driver for unison
    # On MacOS:
    brew install autozimu/homebrew-formulas/unison-fsmonitor
 
@@ -209,19 +209,10 @@ The current configurable values are:
  - defaults to: `30` (GB)
  - Size of the ec2 volume.
 
- If you update `volume_size` after your instance has been created, then 
- performing an update will re-create the instance which might not be desired since it will wipe your volume.
- In this case, you can recreate your instance (`rd delete && rd create`), or [backup your volume](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html) and run:
- ```
- rd update
- rd ssh "sudo growpart /dev/xvda 1 && sudo resize2fs /dev/xvda1"
- ```
- after which you can restore from your snapshot
-
 ---
 
 Profiles are a way to organize and override settings for different projects.
-Values nested in a profile override the values defined outside a profile, 
+Values nested in a profile override the values defined outside a profile,
 except for lists and dictionaries which are merged to the values outside the profile
 
 

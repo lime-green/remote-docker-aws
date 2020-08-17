@@ -212,15 +212,6 @@ class RemoteDockerClient:
         logger.warning("Starting bootstrap")
         self.bootstrap_instance()
 
-    def update_instance(self) -> Dict:
-        logger.warning("Updating instance")
-        result = self._get_sceptre_plan().update()
-
-        logger.debug("Got sceptre result: %s", result)
-        if "complete" not in result.values():
-            raise Exception(f"sceptre command failed: {list(result.values())}")
-        return result
-
     def delete_instance(self) -> Dict:
         logger.warning("Deleting instance")
         result = self._get_sceptre_plan().delete()
