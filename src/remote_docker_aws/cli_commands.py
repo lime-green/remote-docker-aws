@@ -103,6 +103,11 @@ def cmd_create(client: RemoteDockerClient):
 @cli.command(name="delete", help="Delete the provisioned ec2 instance")
 @pass_config
 def cmd_delete(client: RemoteDockerClient):
+    if client.is_termination_protection_enabled():
+        raise click.exceptions.ClickException(
+            "Termination protection is currently enabled. It first must be disabled to delete the instance"
+        )
+
     click.confirm("Are you sure you want to delete your instance?", abort=True)
     print(client.delete_instance())
 
@@ -138,3 +143,21 @@ def cmd_tunnel(client: RemoteDockerClient, local, remote):
 @pass_config
 def cmd_sync(client: RemoteDockerClient, directories: Tuple[str]):
     client.sync(extra_sync_dirs=list(directories))
+
+
+@cli.command(
+    name="disable-termination-protection",
+    help="Turn off termination protection, thereby allowing your instance to be deleted",
+)
+@pass_config
+def disable_termination_protection(client: RemoteDockerClient):
+    client.disable_termination_protection()
+
+
+@cli.command(
+    name="enable-termination-protection",
+    help="Prevents your instance from being deleted through the API and AWS console GUI",
+)
+@pass_config
+def enable_termination_protection(client: RemoteDockerClient):
+    client.enable_termination_protection()

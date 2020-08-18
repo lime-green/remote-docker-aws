@@ -114,6 +114,21 @@ class TestCore:
         with pytest.raises(RuntimeError):
             remote_docker_client.get_ip()
 
+    @patch_exec
+    @mock.patch("remote_docker_aws.core.wait_until_port_is_open", autospec=True)
+    def test_api_termination_settings(
+        self, _mock_wait, _mock_execvp, remote_docker_client
+    ):
+        remote_docker_client.create_instance()
+        assert not remote_docker_client.is_termination_protection_enabled()
+
+        remote_docker_client.enable_termination_protection()
+        assert remote_docker_client.is_termination_protection_enabled()
+        remote_docker_client.disable_termination_protection()
+        assert not remote_docker_client.is_termination_protection_enabled()
+
+        remote_docker_client.delete_instance()
+
     @patch_get_ip
     @patch_exec
     @patch_run

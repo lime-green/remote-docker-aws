@@ -123,6 +123,24 @@ class RemoteDockerClient:
         logger.warning("Stopping instance")
         return self.ec2_client.stop_instances(InstanceIds=[self.get_instance_id()])
 
+    def _set_disable_api_termination(self, value: bool):
+        return self.ec2_client.modify_instance_attribute(
+            DisableApiTermination=dict(Value=value), InstanceId=self.get_instance_id(),
+        )
+
+    def enable_termination_protection(self):
+        logger.warning("Enabling Termination protection")
+        return self._set_disable_api_termination(True)
+
+    def disable_termination_protection(self):
+        logger.warning("Disabling Termination protection")
+        return self._set_disable_api_termination(False)
+
+    def is_termination_protection_enabled(self):
+        return self.ec2_client.describe_instance_attribute(
+            Attribute="disableApiTermination", InstanceId=self.get_instance_id(),
+        )["DisableApiTermination"]["Value"]
+
     def start_tunnel(
         self, *, extra_local_forwards=None, extra_remote_forwards=None,
     ):
