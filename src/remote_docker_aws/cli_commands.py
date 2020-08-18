@@ -58,62 +58,65 @@ def cli(ctx, profile_name, config_path):
     ctx.obj = create_remote_docker_client(config)
 
 
-@cli.command(name="ssh", help="Connect to the remote agent via SSH")
+@cli.command(name="ssh")
 @click.argument("ssh_cmd", required=False)
 @click.option("--ssh_options", default=None, help="Pass additional arguments to SSH")
 @pass_config
 def cmd_ssh(client: RemoteDockerClient, ssh_options=None, ssh_cmd=None):
+    """Connect to the remote agent via SSH"""
     client.ssh_connect(ssh_cmd=ssh_cmd, options=ssh_options)
 
 
-@cli.command(name="start", help="Start the remote agent instance")
+@cli.command(name="start")
 @pass_config
 def cmd_start(client: RemoteDockerClient):
+    """Start the remote agent instance"""
     print(client.start_instance())
 
 
-@cli.command(name="stop", help="Stop the remote agent instance")
+@cli.command(name="stop")
 @pass_config
 def cmd_stop(client: RemoteDockerClient):
+    """Stop the remote agent instance"""
     print(client.stop_instance())
 
 
-@cli.command(name="ip", help="Print the IP address of the remote agent")
+@cli.command(name="ip")
 @pass_config
 def cmd_ip(client: RemoteDockerClient):
+    """Print the IP address of the remote agent"""
     print(client.get_ip())
 
 
-@cli.command(
-    name="create-keypair", help="Create and upload a new keypair to AWS for SSH access"
-)
+@cli.command(name="create-keypair")
 @pass_config
 def cmd_create_keypair(client: RemoteDockerClient):
+    """Create and upload a new keypair to AWS for SSH access"""
     client.create_keypair()
 
 
-@cli.command(
-    name="create", help="Provision a new ec2 instance to use as the remote agent"
-)
+@cli.command(name="create")
 @pass_config
 def cmd_create(client: RemoteDockerClient):
+    """Provision a new ec2 instance to use as the remote agent"""
     print(client.create_instance())
 
 
-@cli.command(name="delete", help="Delete the provisioned ec2 instance")
+@cli.command(name="delete")
 @pass_config
 def cmd_delete(client: RemoteDockerClient):
+    """Delete the provisioned ec2 instance"""
+    if client.is_termination_protection_enabled():
+        raise click.exceptions.ClickException(
+            "Termination protection is currently enabled."
+            " It first must be disabled to delete the instance"
+        )
+
     click.confirm("Are you sure you want to delete your instance?", abort=True)
     print(client.delete_instance())
 
 
-@cli.command(
-    name="tunnel",
-    help=(
-        "Create a SSH tunnel to the remote instance to connect"
-        " with the docker agent and containers"
-    ),
-)
+@cli.command(name="tunnel",)
 @click.option(
     "--local",
     "-l",
@@ -130,11 +133,36 @@ def cmd_delete(client: RemoteDockerClient):
 )
 @pass_config
 def cmd_tunnel(client: RemoteDockerClient, local, remote):
+    """
+    Create a SSH tunnel to the remote instance to connect
+    with the docker agent and containers
+    """
     client.start_tunnel(extra_local_forwards=local, extra_remote_forwards=remote)
 
 
-@cli.command(name="sync", help="Sync the given directories with the remote instance")
+@cli.command(name="sync")
 @click.argument("directories", nargs=-1)
 @pass_config
 def cmd_sync(client: RemoteDockerClient, directories: Tuple[str]):
+    """Sync the given directories with the remote instance"""
     client.sync(extra_sync_dirs=list(directories))
+
+
+@cli.command(name="disable-termination-protection",)
+@pass_config
+def disable_termination_protection(client: RemoteDockerClient):
+    """
+    Turns off termination protection,
+    thereby allowing your instance to be deleted
+    """
+    client.disable_termination_protection()
+
+
+@cli.command(name="enable-termination-protection",)
+@pass_config
+def enable_termination_protection(client: RemoteDockerClient):
+    """
+    Prevents your instance from being deleted through
+    the API and AWS console GUI"
+    """
+    client.enable_termination_protection()

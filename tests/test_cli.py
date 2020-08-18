@@ -39,7 +39,7 @@ class TestCLICommandsWithMoto:
 
     @pytest.fixture
     def cli_runner(self):
-        runner = CliRunner()
+        runner = CliRunner(mix_stderr=False)
         with runner.isolated_filesystem():
             yield runner
 
@@ -54,8 +54,6 @@ class TestCLICommandsWithMoto:
                         result = cli_runner.invoke(cli, ["create"])
                 else:
                     result = cli_runner.invoke(cli, ["create"])
-
-                assert result.exit_code == 0
                 return result
 
         return create
@@ -64,8 +62,6 @@ class TestCLICommandsWithMoto:
     def delete_instance(self, cli_runner):
         def delete():
             result = cli_runner.invoke(cli, ["delete"], input="y")
-
-            assert result.exit_code == 0
             return result
 
         return delete
@@ -83,8 +79,11 @@ class TestCLICommandsWithMoto:
         return _instance
 
     def test_create_and_delete(self, create_instance, delete_instance):
-        create_instance()
-        delete_instance()
+        result = create_instance()
+        assert result.exit_code == 0
+
+        result = delete_instance()
+        assert result.exit_code == 0
 
     @patch_exec
     def test_ssh(self, mock_exec, cli_runner, instance):
@@ -147,3 +146,42 @@ class TestCLICommandsWithMoto:
         assert result.exit_code == 0
         assert mock_run.call_count == 2
         mock_exec.assert_called_once()
+
+    @mock.patch(
+        "remote_docker_aws.core.RemoteDockerClient.enable_termination_protection",
+        autospec=True,
+    )
+    def test_enable_termination_protection(
+        self, mock_enable_termination_protection, cli_runner, instance
+    ):
+        with instance():
+            result = cli_runner.invoke(cli, ["enable-termination-protection"])
+        assert result.exit_code == 0
+        mock_enable_termination_protection.assert_called_once()
+
+    @mock.patch(
+        "remote_docker_aws.core.RemoteDockerClient.disable_termination_protection",
+        autospec=True,
+    )
+    def test_disable_termination_protection(
+        self, mock_disable_termination_protection, cli_runner, instance
+    ):
+        with instance():
+            result = cli_runner.invoke(cli, ["disable-termination-protection"])
+        assert result.exit_code == 0
+        mock_disable_termination_protection.assert_called_once()
+
+    def test_delete_raises_error_if_termination_protection_is_enabled(
+        self, cli_runner, instance
+    ):
+        with instance():
+            result = cli_runner.invoke(cli, ["enable-termination-protection"])
+            assert result.exit_code == 0
+            result = cli_runner.invoke(cli, ["delete"])
+            assert result.exit_code == 1
+            assert result.stderr is not None
+
+            result = cli_runner.invoke(cli, ["disable-termination-protection"])
+            assert result.exit_code == 0
+            result = cli_runner.invoke(cli, ["delete"], input="y")
+            assert result.exit_code == 0
