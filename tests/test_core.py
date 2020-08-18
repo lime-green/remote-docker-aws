@@ -1,11 +1,13 @@
 import ipaddress
-from cryptography.hazmat.primitives import serialization as crypto_serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.backends import default_backend as crypto_default_backend
+import os
+from contextlib import contextmanager
 from pkg_resources import EntryPoint
 from unittest import mock
 
 import pytest
+from cryptography.hazmat.primitives import serialization as crypto_serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.backends import default_backend as crypto_default_backend
 from moto import mock_cloudformation, mock_ec2
 
 from remote_docker_aws.config import RemoteDockerConfigProfile
@@ -23,6 +25,9 @@ patch_exec = mock.patch("os.execvp", autospec=True)
 patch_run = mock.patch("subprocess.run", autospec=True)
 patch_get_ip = mock.patch(
     "remote_docker_aws.core.RemoteDockerClient.get_ip", autospec=True
+)
+patch_wait_until_port_is_open = mock.patch(
+    "remote_docker_aws.core.wait_until_port_is_open", autospec=True
 )
 
 
@@ -84,6 +89,37 @@ class TestCore:
         )
         return create_remote_docker_client(config)
 
+    @pytest.fixture
+    def create_instance(self, remote_docker_client):
+        def create():
+            with patch_wait_until_port_is_open:
+                if not isinstance(os.execvp, mock.MagicMock):
+                    with patch_exec:
+                        remote_docker_client.create_instance()
+                else:
+                    remote_docker_client.create_instance()
+
+        return create
+
+    @pytest.fixture
+    def delete_instance(self, remote_docker_client):
+        def delete():
+            return remote_docker_client.delete_instance()
+
+        return delete
+
+    @pytest.fixture
+    def instance(self, create_instance, delete_instance):
+        @contextmanager
+        def _instance():
+            create_instance()
+            try:
+                yield
+            finally:
+                delete_instance()
+
+        return _instance
+
     def test_get_ip_when_no_instances_running(self, remote_docker_client):
         with pytest.raises(RuntimeError) as exc:
             remote_docker_client.get_ip()
@@ -92,14 +128,10 @@ class TestCore:
                 == "There are no valid reservations, did you create the instance?"
             )
 
-    @patch_exec
-    @mock.patch("remote_docker_aws.core.wait_until_port_is_open", autospec=True)
     def test_creates_and_interacts_with_instance(
-        self, mock_wait, mock_execvp, remote_docker_client
+        self, remote_docker_client, create_instance, delete_instance
     ):
-        remote_docker_client.create_instance()
-        mock_wait.assert_called_once()
-        mock_execvp.assert_called_once()
+        create_instance()
 
         assert is_valid_ip(remote_docker_client.get_ip())
         assert remote_docker_client.get_instance_state() == "running"
@@ -110,24 +142,20 @@ class TestCore:
         remote_docker_client.start_instance()
         assert remote_docker_client.get_instance_state() == "running"
 
-        remote_docker_client.delete_instance()
+        delete_instance()
         with pytest.raises(RuntimeError):
             remote_docker_client.get_ip()
 
-    @patch_exec
-    @mock.patch("remote_docker_aws.core.wait_until_port_is_open", autospec=True)
     def test_api_termination_settings(
-        self, _mock_wait, _mock_execvp, remote_docker_client
+        self, remote_docker_client, instance,
     ):
-        remote_docker_client.create_instance()
-        assert not remote_docker_client.is_termination_protection_enabled()
+        with instance():
+            assert not remote_docker_client.is_termination_protection_enabled()
 
-        remote_docker_client.enable_termination_protection()
-        assert remote_docker_client.is_termination_protection_enabled()
-        remote_docker_client.disable_termination_protection()
-        assert not remote_docker_client.is_termination_protection_enabled()
-
-        remote_docker_client.delete_instance()
+            remote_docker_client.enable_termination_protection()
+            assert remote_docker_client.is_termination_protection_enabled()
+            remote_docker_client.disable_termination_protection()
+            assert not remote_docker_client.is_termination_protection_enabled()
 
     @patch_get_ip
     @patch_exec
