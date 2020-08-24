@@ -41,7 +41,7 @@ def test_handles_file_does_exist(_mock_is_file, file_open_mocker, mock_contents)
 
 def test_settings_with_defaults():
     config = RemoteDockerConfigProfile({})
-    assert config.instance_type == "t2.medium"
+    assert config.instance_type == "t3.medium"
     assert config.key_path == os.path.expanduser("~/.ssh/id_rsa_remote_docker")
     assert config.local_port_forwards == {}
     assert config.remote_port_forwards == {}

@@ -12,7 +12,7 @@ what the remote hosts runs) is much more performant.
 The downsides:
 - SSH tunnel communication is slower than local communication. However using an AWS region with low ping makes the latency unnoticeable. Find the region fastest for you using [this site](https://ping.psa.fun/) or [this site](https://www.cloudping.info/)
 - Some more setup required to get everything configured properly and running (tunneling ports, syncing file changes)
-- Running the ec2 instance incurs an additional cost over running locally, although a t2.medium instance in Canada only costs about 5 cents/hour
+- Running the ec2 instance incurs an additional cost over running locally, although a t3.medium instance in Canada only costs just under 5 cents/hour
 
 ## Setup
 1. First login to your AWS account and [create access keys to access AWS through the CLI](https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html)
@@ -174,7 +174,7 @@ The current configurable values are:
 - The region to create the instance in
 
 #### `instance_type`
-- Type of ec2 instance, defaults to: `t2.medium`
+- Type of ec2 instance, defaults to: `t3.medium`
 
 #### `key_path`
   - defaults to: `~/.ssh/id_rsa_remote_docker`
@@ -217,7 +217,7 @@ except for lists and dictionaries which are merged with the values outside the p
 
 
 ## Cost
-A t2.medium instance on ca-central-1 currently costs $0.051 /hour. [See current prices](https://aws.amazon.com/ec2/pricing/on-demand/)
+A t3.medium instance on ca-central-1 currently costs $0.046 /hour. [See current prices](https://aws.amazon.com/ec2/pricing/on-demand/)
 
 Nothing else used should incur any cost with reasonable usage
 
