@@ -3,6 +3,8 @@ pytest
 flake8
 moto
 cryptography
+service-infrastructure
+library-infrastructure
 
 # Needed for sceptre + moto compatibility
 # Remove this once sceptre uses >= 2.4

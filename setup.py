@@ -10,7 +10,12 @@ if exists(readme_path):
 else:
     long_description = ""
 
-INSTALL_REQUIRES = ("boto3", "sceptre>=2.3", "click", "unison-gitignore>=1.0.0")
+INSTALL_REQUIRES = (
+    "boto3",
+    "sceptre>=2.3",
+    "click",
+    "unison-gitignore>=1.0.0",
+)
 
 
 setup(
@@ -18,9 +23,9 @@ setup(
     install_requires=INSTALL_REQUIRES,
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
+    extras_require={"dev": ["library-infrastructure"]},
     description="Client to control a remote-docker agent",
     long_description=long_description,
-    long_description_content_type="text/markdown",
     author="Josh DM",
     url="https://github.com/lime-green/remote-docker-aws",
     package_dir={"": "src"},
@@ -51,3 +56,4 @@ setup(
     license="MIT",
     keywords=["docker", "aws", "development", "macos", "linux"],
 )
+
