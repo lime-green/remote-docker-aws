@@ -116,7 +116,9 @@ def cmd_delete(client: RemoteDockerClient):
     print(client.delete_instance())
 
 
-@cli.command(name="tunnel",)
+@cli.command(
+    name="tunnel",
+)
 @click.option(
     "--local",
     "-l",
@@ -148,7 +150,9 @@ def cmd_sync(client: RemoteDockerClient, directories: Tuple[str]):
     client.sync(extra_sync_dirs=list(directories))
 
 
-@cli.command(name="disable-termination-protection",)
+@cli.command(
+    name="disable-termination-protection",
+)
 @pass_config
 def disable_termination_protection(client: RemoteDockerClient):
     """
@@ -158,7 +162,9 @@ def disable_termination_protection(client: RemoteDockerClient):
     client.disable_termination_protection()
 
 
-@cli.command(name="enable-termination-protection",)
+@cli.command(
+    name="enable-termination-protection",
+)
 @pass_config
 def enable_termination_protection(client: RemoteDockerClient):
     """
