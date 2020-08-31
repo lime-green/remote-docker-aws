@@ -36,6 +36,7 @@ def get_ec2_client(region_name):
 
 
 class RemoteDockerClient:
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         project_code: str,

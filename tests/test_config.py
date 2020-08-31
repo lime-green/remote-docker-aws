@@ -59,9 +59,11 @@ def test_settings_with_defaults():
 def test_settings_with_no_defaults():
     config = RemoteDockerConfigProfile({})
 
+    # pylint: disable=pointless-statement
     with pytest.raises(KeyError):
         config.aws_profile
 
+    # pylint: disable=pointless-statement
     with pytest.raises(KeyError):
         config.aws_region
 
