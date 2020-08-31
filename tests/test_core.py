@@ -147,7 +147,9 @@ class TestCore:
             remote_docker_client.get_ip()
 
     def test_api_termination_settings(
-        self, remote_docker_client, instance,
+        self,
+        remote_docker_client,
+        instance,
     ):
         with instance():
             assert not remote_docker_client.is_termination_protection_enabled()

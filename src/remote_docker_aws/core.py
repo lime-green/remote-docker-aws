@@ -125,7 +125,8 @@ class RemoteDockerClient:
 
     def _set_disable_api_termination(self, value: bool):
         return self.ec2_client.modify_instance_attribute(
-            DisableApiTermination=dict(Value=value), InstanceId=self.get_instance_id(),
+            DisableApiTermination=dict(Value=value),
+            InstanceId=self.get_instance_id(),
         )
 
     def enable_termination_protection(self):
@@ -138,11 +139,15 @@ class RemoteDockerClient:
 
     def is_termination_protection_enabled(self):
         return self.ec2_client.describe_instance_attribute(
-            Attribute="disableApiTermination", InstanceId=self.get_instance_id(),
+            Attribute="disableApiTermination",
+            InstanceId=self.get_instance_id(),
         )["DisableApiTermination"]["Value"]
 
     def start_tunnel(
-        self, *, extra_local_forwards=None, extra_remote_forwards=None,
+        self,
+        *,
+        extra_local_forwards=None,
+        extra_remote_forwards=None,
     ):
         if extra_local_forwards is None:
             extra_local_forwards = {}
@@ -184,7 +189,9 @@ class RemoteDockerClient:
         with open(file_location, "r") as fh:
             file_bytes = fh.read().strip().encode("utf-8")
 
-        self.ec2_client.delete_key_pair(KeyName=self.ssh_key_pair_name,)
+        self.ec2_client.delete_key_pair(
+            KeyName=self.ssh_key_pair_name,
+        )
         return self.ec2_client.import_key_pair(
             KeyName=self.ssh_key_pair_name,
             # Documentation is lying, shouldn't be b64 encoded...
@@ -296,7 +303,9 @@ class RemoteDockerClient:
             stdout=sys.stdout,
             stderr=sys.stderr,
         )
-        return self.import_key(file_location=f"{path}.pub",)
+        return self.import_key(
+            file_location=f"{path}.pub",
+        )
 
     def _get_unison_cmd(
         self,
@@ -328,7 +337,9 @@ class RemoteDockerClient:
         return shlex.split(cmd_s.replace("\n", ""))
 
     def sync(
-        self, *, extra_sync_dirs: List[str] = None,
+        self,
+        *,
+        extra_sync_dirs: List[str] = None,
     ):
         if extra_sync_dirs is None:
             extra_sync_dirs = []
@@ -350,7 +361,10 @@ class RemoteDockerClient:
         logger.info("Pushing local files to remote server")
         subprocess.run(
             self._get_unison_cmd(
-                ip=ip, replica_path=replica_path, sync_paths=sync_paths, force=True,
+                ip=ip,
+                replica_path=replica_path,
+                sync_paths=sync_paths,
+                force=True,
             ),
             check=True,
         )
@@ -358,7 +372,10 @@ class RemoteDockerClient:
         # Then watch for update
         logger.info("Watching local and remote filesystems for changes")
         watch_cmd = self._get_unison_cmd(
-            ip=ip, replica_path=replica_path, sync_paths=sync_paths, repeat_watch=True,
+            ip=ip,
+            replica_path=replica_path,
+            sync_paths=sync_paths,
+            repeat_watch=True,
         )
 
         logger.warning("")
