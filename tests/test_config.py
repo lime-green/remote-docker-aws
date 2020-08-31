@@ -33,7 +33,9 @@ def test_handles_file_does_not_exist(_mock_is_file):
 
 
 @mock.patch("os.path.isfile", return_value=True)
-def test_handles_file_does_exist(_mock_is_file, file_open_mocker, mock_contents):
+def test_handles_file_does_exist(
+    _mock_is_file, file_open_mocker, mock_contents
+):
     with file_open_mocker(mock_contents):
         config = RemoteDockerConfigProfile.from_json_file("file_does_exist")
     assert config.config_dict == mock_contents
@@ -65,7 +67,8 @@ def test_settings_with_no_defaults():
 
 
 @mock.patch.dict(
-    os.environ, {"AWS_PROFILE": "mock_aws_profile", "AWS_REGION": "mock_aws_region"}
+    os.environ,
+    {"AWS_PROFILE": "mock_aws_profile", "AWS_REGION": "mock_aws_region"},
 )
 def test_settings_with_env_var_fallback():
     config = RemoteDockerConfigProfile({})
@@ -87,7 +90,9 @@ def test_settings_with_profile():
                 "aws_region": "us-east-1",
                 "sync_ignore_patterns_git": ["test2.py"],
                 "local_port_forwards": {"db": {"3306": "3306"}},
-                "remote_port_forwards": {"local-webpack-app": {"8080": "8080"}},
+                "remote_port_forwards": {
+                    "local-webpack-app": {"8080": "8080"}
+                },
             }
         },
     }
@@ -99,7 +104,9 @@ def test_settings_with_profile():
         "db": {"3306": "3306"},
     }
     assert config.sync_ignore_patterns_git == ["test.py", "test2.py"]
-    assert config.remote_port_forwards == {"local-webpack-app": {"8080": "8080"}}
+    assert config.remote_port_forwards == {
+        "local-webpack-app": {"8080": "8080"}
+    }
     assert config.user_id == "jon_smith"
 
     user_id = "jon_smith"

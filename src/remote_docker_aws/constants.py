@@ -10,7 +10,9 @@ INSTANCE_USERNAME = "ubuntu"
 # Used to identify the ec2 instance
 INSTANCE_SERVICE_NAME = "remote-docker-ec2-agent"
 INSTANCE_TYPE_DEFAULT = "t3.medium"
-SCEPTRE_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), "sceptre")
+SCEPTRE_PATH = os.path.join(
+    pathlib.Path(__file__).parent.absolute(), "sceptre"
+)
 SCEPTRE_PROJECT_CODE = "remote-docker"
 # AWS free tier includes 30GB, so seems like a sensible default
 VOLUME_SIZE_DEFAULT = 30

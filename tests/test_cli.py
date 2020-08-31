@@ -109,7 +109,8 @@ class TestCLICommandsWithMoto:
         assert result.stdout
 
     @mock.patch(
-        "remote_docker_aws.core.RemoteDockerClient.create_keypair", autospec=True
+        "remote_docker_aws.core.RemoteDockerClient.create_keypair",
+        autospec=True,
     )
     def test_create_keypair(self, mock_create_keypair, cli_runner, instance):
         with instance():
@@ -117,7 +118,9 @@ class TestCLICommandsWithMoto:
         assert result.exit_code == 0
         assert mock_create_keypair.call_count == 1
 
-    @pytest.mark.parametrize("local,remote", [(None, None), ("80:80", "3300:3300")])
+    @pytest.mark.parametrize(
+        "local,remote", [(None, None), ("80:80", "3300:3300")]
+    )
     @patch_run
     def test_tunnel(self, mock_run, local, remote, cli_runner, instance):
         args = ["tunnel"]
@@ -132,10 +135,14 @@ class TestCLICommandsWithMoto:
         assert result.exit_code == 0
         mock_run.assert_called_once()
 
-    @pytest.mark.parametrize("directories", [(["/data/mock_dir1", "/data/mock_dir2"])])
+    @pytest.mark.parametrize(
+        "directories", [(["/data/mock_dir1", "/data/mock_dir2"])]
+    )
     @patch_exec
     @patch_run
-    def test_sync(self, mock_run, mock_exec, directories, cli_runner, instance):
+    def test_sync(
+        self, mock_run, mock_exec, directories, cli_runner, instance
+    ):
         args = ["sync"]
 
         if directories:

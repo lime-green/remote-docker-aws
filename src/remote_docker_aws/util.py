@@ -9,7 +9,9 @@ from typing import List
 log_level = os.environ.get("REMOTE_DOCKER_LOG_LEVEL", "WARN")
 logger = logging.getLogger("remote-docker")
 logger.setLevel(getattr(logging, log_level))
-logFormatter = logging.Formatter(fmt="%(name)s :: %(levelname)-8s :: %(message)s")
+logFormatter = logging.Formatter(
+    fmt="%(name)s :: %(levelname)-8s :: %(message)s"
+)
 handler = logging.StreamHandler()
 handler.setFormatter(logFormatter)
 logger.addHandler(handler)
@@ -33,14 +35,18 @@ def get_replica_and_sync_paths_for_unison(dirs: List[str]):
     for dir_path in dirs:
         dir_parts = pathlib.Path(dir_path).parts
         if len(dir_parts) < 2:
-            raise ValueError("Directories must be children of the root directory")
+            raise ValueError(
+                "Directories must be children of the root directory"
+            )
 
         path_first_dir = pathlib.Path(*dir_parts[0:2])
 
         if replica_path is None:
             replica_path = path_first_dir
         elif path_first_dir != replica_path:
-            raise ValueError("Directories must share a common path other than '/'")
+            raise ValueError(
+                "Directories must share a common path other than '/'"
+            )
         sync_paths.append(pathlib.Path(*dir_parts[2:]))
 
     return replica_path, sync_paths

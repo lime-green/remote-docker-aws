@@ -5,9 +5,13 @@ from pkg_resources import EntryPoint
 from unittest import mock
 
 import pytest
-from cryptography.hazmat.primitives import serialization as crypto_serialization
+from cryptography.hazmat.primitives import (
+    serialization as crypto_serialization,
+)
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.backends import default_backend as crypto_default_backend
+from cryptography.hazmat.backends import (
+    default_backend as crypto_default_backend,
+)
 from moto import mock_cloudformation, mock_ec2
 
 from remote_docker_aws.config import RemoteDockerConfigProfile
@@ -147,7 +151,9 @@ class TestCore:
             remote_docker_client.get_ip()
 
     def test_api_termination_settings(
-        self, remote_docker_client, instance,
+        self,
+        remote_docker_client,
+        instance,
     ):
         with instance():
             assert not remote_docker_client.is_termination_protection_enabled()
@@ -160,7 +166,9 @@ class TestCore:
     @patch_get_ip
     @patch_exec
     @patch_run
-    def test_sync(self, mock_run, mock_execvp, mock_get_ip, remote_docker_client):
+    def test_sync(
+        self, mock_run, mock_execvp, mock_get_ip, remote_docker_client
+    ):
         mock_get_ip.return_value = "1.2.3.4"
         remote_docker_client.sync()
 
@@ -239,7 +247,9 @@ class TestCore:
     @patch_run
     def test_create_keypair(self, mock_run, remote_docker_client):
         with mock.patch("builtins.open") as mock_open:
-            mock_open.side_effect = mock.mock_open(read_data=generate_ssh_public_key())
+            mock_open.side_effect = mock.mock_open(
+                read_data=generate_ssh_public_key()
+            )
             remote_docker_client.create_keypair()
 
         assert mock_run.call_count == 2

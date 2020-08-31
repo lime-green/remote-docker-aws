@@ -40,7 +40,9 @@ def _convert_port_forward_to_dict(
 )
 @click.pass_context
 def cli(ctx, profile_name, config_path):
-    config = RemoteDockerConfigProfile.from_json_file(config_path, profile_name)
+    config = RemoteDockerConfigProfile.from_json_file(
+        config_path, profile_name
+    )
 
     try:
         aws_profile = config.aws_profile
@@ -60,7 +62,9 @@ def cli(ctx, profile_name, config_path):
 
 @cli.command(name="ssh")
 @click.argument("ssh_cmd", required=False)
-@click.option("--ssh_options", default=None, help="Pass additional arguments to SSH")
+@click.option(
+    "--ssh_options", default=None, help="Pass additional arguments to SSH"
+)
 @pass_config
 def cmd_ssh(client: RemoteDockerClient, ssh_options=None, ssh_cmd=None):
     """Connect to the remote agent via SSH"""
@@ -116,7 +120,9 @@ def cmd_delete(client: RemoteDockerClient):
     print(client.delete_instance())
 
 
-@cli.command(name="tunnel",)
+@cli.command(
+    name="tunnel",
+)
 @click.option(
     "--local",
     "-l",
@@ -137,7 +143,9 @@ def cmd_tunnel(client: RemoteDockerClient, local, remote):
     Create a SSH tunnel to the remote instance to connect
     with the docker agent and containers
     """
-    client.start_tunnel(extra_local_forwards=local, extra_remote_forwards=remote)
+    client.start_tunnel(
+        extra_local_forwards=local, extra_remote_forwards=remote
+    )
 
 
 @cli.command(name="sync")
@@ -148,7 +156,9 @@ def cmd_sync(client: RemoteDockerClient, directories: Tuple[str]):
     client.sync(extra_sync_dirs=list(directories))
 
 
-@cli.command(name="disable-termination-protection",)
+@cli.command(
+    name="disable-termination-protection",
+)
 @pass_config
 def disable_termination_protection(client: RemoteDockerClient):
     """
@@ -158,7 +168,9 @@ def disable_termination_protection(client: RemoteDockerClient):
     client.disable_termination_protection()
 
 
-@cli.command(name="enable-termination-protection",)
+@cli.command(
+    name="enable-termination-protection",
+)
 @pass_config
 def enable_termination_protection(client: RemoteDockerClient):
     """
