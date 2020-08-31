@@ -52,17 +52,18 @@ The downsides:
    # Or, on Linux since the above formula doesn't work:
    brew install eugenmayer/dockersync/unox
     ```
-
+    
 1. Generate and upload a keypair to AWS
 
     ```bash
-   rd create-keypair
+   # Note: bash users can use `rd` instead of `remote-docker`. zsh users cannot since zsh aliases `rd` to `rmdir` (!) 
+   remote-docker create-keypair
     ```
 
 1. Create the ec2 instance
 
     ```bash
-   rd create
+   remote-docker create
     ```
 
 ## Daily Running
@@ -71,31 +72,31 @@ Note: QUIT Docker Desktop (or any local docker-agent equivalent) when using the 
 
 1. Start the remote-docker ec2 instance
     ```bash
-    rd start
+    remote-docker start
     ```
 
 1. In one terminal start the tunnel so that the ports you need to connect to are exposed
     ```bash
-    rd tunnel
+    remote-docker tunnel
 
    # Usually it's preferable just to forward the ports to same port
    # so eg. with mysql on docker exposing port 3306 and nginx on docker exposing port 80:
-   rd tunnel -l 80:80 -l 3306:3306
+   remote-docker tunnel -l 80:80 -l 3306:3306
 
    # You can forward remote ports as needed with the "-r" option:
    # which can be used so the docker instance can access services running locally (eg. webpack)
-   rd tunnel -r 8080:8080
+   remote-docker tunnel -r 8080:8080
     ```
 
 1. In another terminal sync file changes to the remote instance:
     ```bash
     # Add any more paths you need to sync here, or add them to the config file
     # You will need to sync directories that are mounted as volumes by docker
-    rd sync ~/blog
+    remote-docker sync ~/blog
 
     # If watched directories are supplied in ~/.remote-docker.config.json
     # then simply call:
-    rd sync
+    remote-docker sync
     ```
 
 1. Make sure to set `DOCKER_HOST`:
@@ -113,11 +114,11 @@ Note: QUIT Docker Desktop (or any local docker-agent equivalent) when using the 
    boots, it will start up docker and resume where it left off from the day before.
 
 1. Develop and code! All services should be accessible and usable as usual
-as long as you are running `rd tunnel` and are forwarding the ports you need
+as long as you are running `remote-docker tunnel` and are forwarding the ports you need
 
 1. When you're done for the day don't forget to stop the instance to save money:
     ```bash
-    rd stop
+    remote-docker stop
     ```
 
 ## Config File
@@ -159,7 +160,7 @@ An example `.remote-docker.config.json` file:
 ```
 
 ```bash
-Usage: rd [OPTIONS] COMMAND [ARGS]...
+Usage: remote-docker [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --profile TEXT      Name of the remote-docker profile to use
@@ -203,7 +204,7 @@ The current configurable values are:
 
 #### `watched_directories`
  - defaults to: `[]`
- - list of paths to watch by `rd sync`
+ - list of paths to watch by `remote-docker sync`
 
 #### `volume_size`
  - defaults to: `30` (GB)
@@ -222,5 +223,5 @@ A t3.medium instance on ca-central-1 currently costs $0.046 /hour. [See current 
 Nothing else used should incur any cost with reasonable usage
 
 ## Notes
-- See `rd --help` for more information on the commands available
+- See `remote-docker --help` for more information on the commands available
 
