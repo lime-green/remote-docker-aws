@@ -56,14 +56,14 @@ The downsides:
 1. Generate and upload a keypair to AWS
 
     ```bash
-   # Note: bash users can use `rd` instead of `remote-docker`. zsh users cannot since zsh aliases `rd` to `rmdir` (!) 
-   remote-docker create-keypair
+   # Note: bash users can use `rd` instead of `remote-docker-aws`. zsh users cannot since zsh aliases `rd` to `rmdir` (!) 
+   remote-docker-aws create-keypair
     ```
 
 1. Create the ec2 instance
 
     ```bash
-   remote-docker create
+   remote-docker-aws create
     ```
 
 ## Daily Running
@@ -72,31 +72,31 @@ Note: QUIT Docker Desktop (or any local docker-agent equivalent) when using the 
 
 1. Start the remote-docker ec2 instance
     ```bash
-    remote-docker start
+    remote-docker-aws start
     ```
 
 1. In one terminal start the tunnel so that the ports you need to connect to are exposed
     ```bash
-    remote-docker tunnel
+    remote-docker-aws tunnel
 
    # Usually it's preferable just to forward the ports to same port
    # so eg. with mysql on docker exposing port 3306 and nginx on docker exposing port 80:
-   remote-docker tunnel -l 80:80 -l 3306:3306
+   remote-docker-aws tunnel -l 80:80 -l 3306:3306
 
    # You can forward remote ports as needed with the "-r" option:
    # which can be used so the docker instance can access services running locally (eg. webpack)
-   remote-docker tunnel -r 8080:8080
+   remote-docker-aws tunnel -r 8080:8080
     ```
 
 1. In another terminal sync file changes to the remote instance:
     ```bash
     # Add any more paths you need to sync here, or add them to the config file
     # You will need to sync directories that are mounted as volumes by docker
-    remote-docker sync ~/blog
+    remote-docker-aws sync ~/blog
 
     # If watched directories are supplied in ~/.remote-docker.config.json
     # then simply call:
-    remote-docker sync
+    remote-docker-aws sync
     ```
 
 1. Make sure to set `DOCKER_HOST`:
@@ -114,11 +114,11 @@ Note: QUIT Docker Desktop (or any local docker-agent equivalent) when using the 
    boots, it will start up docker and resume where it left off from the day before.
 
 1. Develop and code! All services should be accessible and usable as usual
-as long as you are running `remote-docker tunnel` and are forwarding the ports you need
+as long as you are running `remote-docker-aws tunnel` and are forwarding the ports you need
 
 1. When you're done for the day don't forget to stop the instance to save money:
     ```bash
-    remote-docker stop
+    remote-docker-aws stop
     ```
 
 ## Config File
@@ -160,11 +160,11 @@ An example `.remote-docker.config.json` file:
 ```
 
 ```bash
-Usage: remote-docker [OPTIONS] COMMAND [ARGS]...
+Usage: remote-docker-aws [OPTIONS] COMMAND [ARGS]...
 
 Options:
-  --profile TEXT      Name of the remote-docker profile to use
-  --config-path TEXT  Path of the remote-docker JSON config
+  --profile TEXT      Name of the remote-docker-aws profile to use
+  --config-path TEXT  Path of the remote-docker-aws JSON config
 ```
 
 The current configurable values are:
@@ -204,7 +204,7 @@ The current configurable values are:
 
 #### `watched_directories`
  - defaults to: `[]`
- - list of paths to watch by `remote-docker sync`
+ - list of paths to watch by `remote-docker-aws sync`
 
 #### `volume_size`
  - defaults to: `30` (GB)
@@ -223,5 +223,5 @@ A t3.medium instance on ca-central-1 currently costs $0.046 /hour. [See current 
 Nothing else used should incur any cost with reasonable usage
 
 ## Notes
-- See `remote-docker --help` for more information on the commands available
+- See `remote-docker-aws --help` for more information on the commands available
 
