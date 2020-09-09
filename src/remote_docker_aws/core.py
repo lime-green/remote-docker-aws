@@ -158,7 +158,8 @@ class RemoteDockerClient:
 
         ip = self.get_ip()
         cmd_s = (
-            'sudo ssh -v -o StrictHostKeyChecking=no -o "ServerAliveInterval=60" -N -T'
+            "sudo ssh -v -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no"
+            ' -o "ServerAliveInterval=60" -N -T'
             f" -i {self.ssh_key_path} {INSTANCE_USERNAME}@{ip}"
         )
 
