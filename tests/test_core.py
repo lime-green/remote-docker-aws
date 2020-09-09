@@ -222,6 +222,8 @@ class TestCore:
             "ssh",
             "-v",
             "-o",
+            "ExitOnForwardFailure=yes",
+            "-o",
             "StrictHostKeyChecking=no",
             "-o",
             "ServerAliveInterval=60",
