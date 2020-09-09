@@ -272,6 +272,7 @@ class RemoteDockerClient:
         logger.warning("Bootstrapping instance, will take a few minutes")
         configure_instance_cmd_s = """
         set -x
+        && sudo sysctl -w net.core.somaxconn=4096
         && sudo apt-get -y update
         && sudo apt-get -y install build-essential curl file git docker.io
         && "sudo sed -i -e '/ExecStart=/ s/fd:\/\//127\.0\.0\.1:2375/' '/lib/systemd/system/docker.service'"
