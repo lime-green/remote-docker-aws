@@ -276,6 +276,7 @@ class RemoteDockerClient:
         && sudo apt-get -y update
         && sudo apt-get -y install build-essential curl file git docker.io
         && "sudo sed -i -e '/ExecStart=/ s/fd:\/\//127\.0\.0\.1:2375/' '/lib/systemd/system/docker.service'"
+        && sudo cp /lib/systemd/system/docker.service /etc/systemd/system/docker.service
         && sudo systemctl daemon-reload
         && sudo systemctl restart docker.service
         && sudo systemctl enable docker.service
