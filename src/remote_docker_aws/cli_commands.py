@@ -1,5 +1,4 @@
 import click
-import os
 from typing import Tuple
 
 from .core import (
@@ -41,19 +40,6 @@ def _convert_port_forward_to_dict(
 @click.pass_context
 def cli(ctx, profile_name, config_path):
     config = RemoteDockerConfigProfile.from_json_file(config_path, profile_name)
-
-    try:
-        aws_profile = config.aws_profile
-        os.environ["AWS_PROFILE"] = aws_profile
-    except KeyError:
-        pass
-
-    try:
-        aws_region = config.aws_region
-        os.environ["AWS_REGION"] = aws_region
-    except KeyError:
-        pass
-
     logger.debug("Config: %s", config)
     ctx.obj = create_remote_docker_client(config)
 
