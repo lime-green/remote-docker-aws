@@ -129,7 +129,6 @@ and CLI usage is possible without it as long as AWS_PROFILE and AWS_REGION envir
 An example `.remote-docker.config.json` file:
 ```json
 {
-    "aws_profile": "josh",
     "key_path": "~/.ssh/id_rsa_remote_docker",
     "sync_ignore_patterns_git": [
         "**/*.idea/",
