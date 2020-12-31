@@ -1,5 +1,4 @@
 import click
-import os
 from typing import Tuple
 
 from .core import (
