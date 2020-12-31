@@ -111,16 +111,8 @@ class RemoteDockerConfigProfile(JSONConfigWithProfile):
         return self._boto3_session_cached
 
     @property
-    def aws_profile(self) -> str:
-        if "AWS_PROFILE" in os.environ:
-            return self.get_attribute("aws_profile", os.environ["AWS_PROFILE"])
-        return self.get_attribute("aws_profile")
-
-    @property
     def aws_region(self) -> str:
-        if self._boto3_session.region_name:
-            return self.get_attribute("aws_region", self._boto3_session.region_name)
-        return self.get_attribute("aws_region")
+        return self.get_attribute("aws_region", self._boto3_session.region_name)
 
     @property
     def key_path(self) -> str:

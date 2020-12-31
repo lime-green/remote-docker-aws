@@ -168,9 +168,6 @@ Options:
 ```
 
 The current configurable values are:
-#### `aws_profile` (takes precedence over `AWS_PROFILE`)
-- Needed in order to authenticate with AWS
-
 #### `aws_region` (takes precedence over `AWS_REGION` and `.aws/config`)
 - The region to create the instance in
 
