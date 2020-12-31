@@ -2,6 +2,8 @@ import json
 import os
 from typing import List
 
+import boto3
+
 from .constants import (
     KEY_PAIR_NAME,
     INSTANCE_SERVICE_NAME,
@@ -99,6 +101,15 @@ class JSONConfigWithProfile(JSONConfig):
 
 
 class RemoteDockerConfigProfile(JSONConfigWithProfile):
+    _boto3_session_cached = None
+
+    @property
+    def _boto3_session(self):
+        if not self._boto3_session_cached:
+            self._boto3_session_cached = boto3.session.Session()
+
+        return self._boto3_session_cached
+
     @property
     def aws_profile(self) -> str:
         if "AWS_PROFILE" in os.environ:
@@ -107,8 +118,8 @@ class RemoteDockerConfigProfile(JSONConfigWithProfile):
 
     @property
     def aws_region(self) -> str:
-        if "AWS_REGION" in os.environ:
-            return self.get_attribute("aws_region", os.environ["AWS_REGION"])
+        if self._boto3_session.region_name:
+            return self.get_attribute("aws_region", self._boto3_session.region_name)
         return self.get_attribute("aws_region")
 
     @property

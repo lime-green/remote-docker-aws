@@ -52,11 +52,11 @@ The downsides:
    # Or, on Linux since the above formula doesn't work:
    brew install eugenmayer/dockersync/unox
     ```
-    
+
 1. Generate and upload a keypair to AWS
 
     ```bash
-   # Note: bash users can use `rd` instead of `remote-docker-aws`. zsh users cannot since zsh aliases `rd` to `rmdir` (!) 
+   # Note: bash users can use `rd` instead of `remote-docker-aws`. zsh users cannot since zsh aliases `rd` to `rmdir` (!)
    remote-docker-aws create-keypair
     ```
 
@@ -171,7 +171,7 @@ The current configurable values are:
 #### `aws_profile` (takes precedence over `AWS_PROFILE`)
 - Needed in order to authenticate with AWS
 
-#### `aws_region` (takes precedence over `AWS_REGION`)
+#### `aws_region` (takes precedence over `AWS_REGION` and `.aws/config`)
 - The region to create the instance in
 
 #### `instance_type`

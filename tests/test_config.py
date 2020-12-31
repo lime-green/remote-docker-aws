@@ -67,10 +67,19 @@ def test_settings_with_no_defaults():
 @mock.patch.dict(
     os.environ, {"AWS_PROFILE": "mock_aws_profile", "AWS_REGION": "mock_aws_region"}
 )
-def test_settings_with_env_var_fallback():
+def test_aws_profile_uses_env_var_fallback():
     config = RemoteDockerConfigProfile({})
     assert config.aws_profile == "mock_aws_profile"
-    assert config.aws_region == "mock_aws_region"
+
+
+@mock.patch(
+    "remote_docker_aws.config.RemoteDockerConfigProfile._boto3_session",
+    new_callable=mock.PropertyMock,
+)
+def test_aws_region_uses_boto_session_fallback(mock_session):
+    mock_session.return_value = mock.MagicMock(region_name="session_region")
+    config = RemoteDockerConfigProfile({})
+    assert config.aws_region == "session_region"
 
 
 def test_settings_with_profile():

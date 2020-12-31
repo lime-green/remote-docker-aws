@@ -11,6 +11,10 @@ from remote_docker_aws.cli_commands import cli
 from remote_docker_aws.config import RemoteDockerConfigProfile
 
 
+AWS_PROFILE = "mock_aws_profile"
+AWS_REGION = "ca-central-1"
+
+
 patch_exec = mock.patch("os.execvp", autospec=True)
 patch_run = mock.patch("subprocess.run", autospec=True)
 
@@ -23,6 +27,16 @@ def test_cli_entrypoint_runs_successfully():
     assert output
 
 
+class MockProfile(RemoteDockerConfigProfile):
+    @property
+    def aws_profile(self) -> str:
+        raise KeyError()
+
+    @property
+    def aws_region(self) -> str:
+        return AWS_REGION
+
+
 @mock_cloudformation
 @mock_ec2
 class TestCLICommandsWithMoto:
@@ -32,9 +46,7 @@ class TestCLICommandsWithMoto:
             "remote_docker_aws.cli_commands.RemoteDockerConfigProfile.from_json_file",
             autospec=True,
         ) as mock_from_json_file:
-            mock_from_json_file.return_value = RemoteDockerConfigProfile(
-                config_dict=dict(aws_region="ca-central-1")
-            )
+            mock_from_json_file.return_value = MockProfile({})
             yield
 
     @pytest.fixture
