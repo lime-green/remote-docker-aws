@@ -217,7 +217,6 @@ class RemoteDockerClient:
 
     def create_instance(self):
         logger.warning("Creating instance")
-        logger.warning(self.aws_region)
         result = self._get_sceptre_plan().create()
 
         logger.debug("Got sceptre result: %s", result)
