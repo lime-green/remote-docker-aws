@@ -11,7 +11,6 @@ from remote_docker_aws.cli_commands import cli
 from remote_docker_aws.config import RemoteDockerConfigProfile
 
 
-AWS_PROFILE = "mock_aws_profile"
 AWS_REGION = "ca-central-1"
 
 
@@ -28,10 +27,6 @@ def test_cli_entrypoint_runs_successfully():
 
 
 class MockProfile(RemoteDockerConfigProfile):
-    @property
-    def aws_profile(self) -> str:
-        raise KeyError()
-
     @property
     def aws_region(self) -> str:
         return AWS_REGION
