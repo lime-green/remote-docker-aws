@@ -12,9 +12,13 @@ MacOS users will also see noticeable speed improvements since Docker on Linux (w
 what the remote hosts runs) is much more performant.
 
 The downsides:
-- SSH tunnel communication is slower than local communication. However using an AWS region with low ping makes the latency unnoticeable. Find the region fastest for you using [this site](https://ping.psa.fun/) or [this site](https://www.cloudping.info/)
+- SSH tunnel communication is slower than local communication. However using an AWS region with low ping makes the latency unnoticeable. Find the region fastest for you using [this site](https://www.cloudping.info/)
 - Some more setup required to get everything configured properly and running (tunneling ports, syncing file changes)
 - Running the ec2 instance incurs an additional cost over running locally, although a t3.medium instance in Canada only costs just under 5 cents/hour
+
+How it works: two processes are run, a sync and a tunnel process. 
+- The sync process keeps local and remote files in sync so that the docker process run remotely can use docker volumes transparently
+- The tunnel process forwards ports needed so your local system can communicate with docker, plus additional ports as required, such as port 443 for browser communication
 
 ## Setup
 1. First login to your AWS account and [create access keys to access AWS through the CLI](https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html)
