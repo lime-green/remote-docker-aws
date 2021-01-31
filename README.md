@@ -132,6 +132,38 @@ Looks for a config file at the path `~/.remote-docker.config.json` by default,
 which can be overriden by passing `--config-path`. The config file is not necessary
 and CLI usage is possible without it as long as AWS_PROFILE and AWS_REGION environment variables are set
 
+An example `.remote-docker.config.json` file:
+```json
+{
+    "key_path": "~/.ssh/id_rsa_remote_docker",
+    "sync_ignore_patterns_git": [
+        "**/*.idea/",
+        "**/*.git/",
+        "**/*~",
+        "**/*.sw[pon]"
+    ],
+    "profiles": {
+        "blog": {
+            "sync_ignore_patterns_git": [
+                "**/notes/"
+            ],
+            "remote_port_forwards": {
+                "local-webpack-app": {"8080": "8080"}
+            },
+            "local_port_forwards": {
+                "blog_app": {"443": "443", "80":  "8000"},
+                "blog_db": {"3306": "3306"}
+            },
+            "watched_directories": [
+                "~/.aws",
+                "~/blog"
+            ]
+        }
+    },
+    "default_profile": "blog"
+}
+```
+
 ```bash
 Usage: remote-docker-aws [OPTIONS] COMMAND [ARGS]...
 
