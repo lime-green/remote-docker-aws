@@ -1,5 +1,6 @@
 ## Remote Docker on AWS for local development
 [![PyPI version](https://badge.fury.io/py/remote-docker-aws.svg)](https://badge.fury.io/py/remote-docker-aws)
+![Python versions](https://img.shields.io/pypi/pyversions/remote-docker-aws.svg?style=flat-square&label=Python%20Versions)
 
 Use docker to develop services, but without the overhead of running docker on your machine! This is a development tool that you should use if your machine is low performance, or if you are running many docker services.
 
