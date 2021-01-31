@@ -3,7 +3,7 @@
 
 Use docker to develop services, but without the overhead of running docker on your machine! This is a development tool that you should use if your machine is low performance, or if you are running many docker services.
 
-Why is this useful?
+### Why is this useful?
 
 Frees up your local machine for useful tasks
 such as running your code editor, browser, and email, leaving running Docker to a dedicated server instance.
