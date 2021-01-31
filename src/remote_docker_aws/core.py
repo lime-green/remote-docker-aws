@@ -174,7 +174,7 @@ class RemoteDockerClient:
 
         logger.info("Starting tunnel")
         cmd = shlex.split(cmd_s)
-        logger.info("Running cmd: %s", cmd_s)
+        logger.debug("Running command: %s", cmd_s)
 
         logger.debug("Forwarding: ")
         logger.debug("Local: %s", self.local_forwards)
@@ -379,7 +379,7 @@ class RemoteDockerClient:
         )
 
         logger.debug("Watching: %s", sync_dirs)
-        logger.debug("Running command :%s", watch_cmd)
+        logger.debug("Running command: %s", watch_cmd)
         os.execvp(watch_cmd[0], watch_cmd)
 
 
