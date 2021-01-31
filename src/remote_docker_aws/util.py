@@ -5,11 +5,14 @@ import socket
 import time
 from typing import List
 
+import colorlog
 
-log_level = os.environ.get("REMOTE_DOCKER_LOG_LEVEL", "WARN")
+log_level = os.environ.get("REMOTE_DOCKER_LOG_LEVEL", "INFO")
 logger = logging.getLogger("remote-docker")
 logger.setLevel(getattr(logging, log_level))
-logFormatter = logging.Formatter(fmt="%(name)s :: %(levelname)-8s :: %(message)s")
+logFormatter = colorlog.ColoredFormatter(
+    fmt="%(log_color)s%(name)s :: %(levelname)-8s :: %(message)s"
+)
 handler = logging.StreamHandler()
 handler.setFormatter(logFormatter)
 logger.addHandler(handler)

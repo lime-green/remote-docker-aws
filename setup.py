@@ -10,7 +10,13 @@ if exists(readme_path):
 else:
     long_description = ""
 
-INSTALL_REQUIRES = ("boto3", "sceptre>=2.3", "click", "unison-gitignore>=1.0.0")
+INSTALL_REQUIRES = (
+    "boto3",
+    "sceptre>=2.3",
+    "click",
+    "unison-gitignore>=1.0.0",
+    "colorlog",
+)
 
 
 setup(
@@ -49,7 +55,7 @@ setup(
         "Topic :: Software Development :: Libraries",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    python_requires='>=3.6, <4',
+    python_requires=">=3.6, <4",
     license="MIT",
     keywords=["docker", "aws", "development", "macos", "linux"],
 )
