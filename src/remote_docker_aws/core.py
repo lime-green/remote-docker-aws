@@ -222,7 +222,7 @@ class RemoteDockerClient:
         logger.info("Stack created")
 
         while self.get_instance_state() != "running":
-            logger.warn("Waiting to bootstrap: instance not yet running")
+            logger.warning("Waiting to bootstrap: instance not yet running")
             time.sleep(5)
 
         logger.info("Waiting until SSH access is available")
