@@ -153,12 +153,12 @@ class AWSInstanceProvider(InstanceProvider):
 
     def start_instance(self):
         ret = self._ec2_client.start_instances(InstanceIds=[self.get_instance_id()])
-        self.wait_for_running_state()
+        self._wait_for_running_state()
         return ret
 
     def stop_instance(self):
         ret = self._ec2_client.stop_instances(InstanceIds=[self.get_instance_id()])
-        self.wait_for_stopped_state()
+        self._wait_for_stopped_state()
         return ret
 
     def _set_disable_api_termination(self, value: bool):
@@ -280,10 +280,10 @@ class AWSInstanceProvider(InstanceProvider):
             file_location=f"{ssh_key_path}.pub",
         )
 
-    def wait_for_running_state(self):
+    def _wait_for_running_state(self):
         return self._wait_for_state("running")
 
-    def wait_for_stopped_state(self):
+    def _wait_for_stopped_state(self):
         return self._wait_for_state("stopped")
 
     def _wait_for_state(self, desired_state):
