@@ -1,7 +1,6 @@
 import ipaddress
 import os
 from contextlib import contextmanager
-from pkg_resources import EntryPoint
 from unittest import mock
 
 import pytest
@@ -51,22 +50,6 @@ def is_valid_ip(address):
         return True
     except ValueError:
         return False
-
-
-@pytest.fixture(autouse=True, scope="module")
-def fix_dependency_conflict():
-    """
-    To resolve the following:
-
-    ```
-    ERROR: cfn-lint 0.33.2 has requirement networkx~=2.4; python_version >= "3.5",
-    but you'll have networkx 2.1 which is incompatible.
-    ```
-
-    can't fix because sceptre is pinned at networkx==2.1 right now :(
-    """
-    with mock.patch.object(EntryPoint, "require", return_value=True):
-        yield
 
 
 @mock_cloudformation
