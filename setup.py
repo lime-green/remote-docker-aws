@@ -45,8 +45,8 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "remote-docker-aws = remote_docker_aws.main:main",
-            "rd = remote_docker_aws.main:main",
+            "remote-docker-aws = remote_docker_aws:main",
+            "rd = remote_docker_aws:main",
         ]
     },
     classifiers=[
