@@ -7,6 +7,9 @@ from functools import lru_cache
 from typing import Dict, List
 
 import boto3
+from sceptre.cli.helpers import setup_logging
+from sceptre.context import SceptreContext
+from sceptre.plan.plan import SceptrePlan
 from unison_gitignore.parser import GitIgnoreToUnisonIgnore
 
 from .config import RemoteDockerConfigProfile
@@ -17,7 +20,6 @@ from .constants import (
     PORT_MAP_TYPE,
     SCEPTRE_PATH,
 )
-from .sceptre_compat import setup_logging, SceptreContext, SceptrePlan
 from .util import get_replica_and_sync_paths_for_unison, logger, wait_until_port_is_open
 
 
