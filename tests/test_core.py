@@ -1,3 +1,4 @@
+import boto3
 import ipaddress
 import os
 from contextlib import contextmanager
@@ -12,7 +13,6 @@ from moto import mock_cloudformation, mock_ec2
 from remote_docker_aws.config import RemoteDockerConfigProfile
 from remote_docker_aws.core import (
     create_remote_docker_client,
-    get_ec2_client,
 )
 
 
@@ -23,10 +23,10 @@ REGION = "ca-central-1"
 patch_exec = mock.patch("os.execvp", autospec=True)
 patch_run = mock.patch("subprocess.run", autospec=True)
 patch_get_ip = mock.patch(
-    "remote_docker_aws.core.RemoteDockerClient.get_ip", autospec=True
+    "remote_docker_aws.providers.AWSInstanceProvider.get_ip", autospec=True
 )
 patch_wait_until_port_is_open = mock.patch(
-    "remote_docker_aws.core.wait_until_port_is_open", autospec=True
+    "remote_docker_aws.providers.wait_until_port_is_open", autospec=True
 )
 
 
@@ -117,17 +117,17 @@ class TestCore:
         create_instance()
 
         assert is_valid_ip(remote_docker_client.get_ip())
-        assert remote_docker_client.get_instance_state() == "running"
+        assert remote_docker_client.instance.is_running()
 
         remote_docker_client.stop_instance()
-        assert remote_docker_client.get_instance_state() == "stopped"
+        assert remote_docker_client.instance.is_stopped()
 
         remote_docker_client.start_instance()
-        assert remote_docker_client.get_instance_state() == "running"
+        assert remote_docker_client.instance.is_running()
 
         delete_instance()
         with pytest.raises(RuntimeError):
-            remote_docker_client.get_ip()
+            remote_docker_client.instance.get_ip()
 
     def test_api_termination_settings(
         self,
@@ -155,6 +155,8 @@ class TestCore:
             "ssh",
             "-o",
             "StrictHostKeyChecking=no",
+            "-o",
+            "ServerAliveInterval=60",
             "-i",
             "/fake_key_path",
             "ubuntu@1.2.3.4",
@@ -242,7 +244,8 @@ class TestCore:
         ]
         assert call_2[0][0] == ["ssh-add", "-K", "/fake_key_path"]
 
-        key_pairs = get_ec2_client(REGION).describe_key_pairs()["KeyPairs"]
+        ec2_client = boto3.client("ec2", region_name=REGION)
+        key_pairs = ec2_client.describe_key_pairs()["KeyPairs"]
         assert len(key_pairs) == 1
         key_pair = key_pairs[0]
         assert key_pair["KeyName"] == "remote-docker-keypair"

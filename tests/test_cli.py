@@ -54,7 +54,7 @@ class TestCLICommandsWithMoto:
     def create_instance(self, cli_runner):
         def create():
             with mock.patch(
-                "remote_docker_aws.core.wait_until_port_is_open", autospec=True
+                "remote_docker_aws.providers.wait_until_port_is_open", autospec=True
             ):
                 if not isinstance(os.execvp, mock.MagicMock):
                     with mock.patch("os.execvp"):
