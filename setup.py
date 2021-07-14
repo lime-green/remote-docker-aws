@@ -15,6 +15,7 @@ INSTALL_REQUIRES = (
     "sceptre>=2.5",
     "click",
     "unison-gitignore>=1.0.0",
+    "colorlog",
 )
 DEV_REQUIRES = (
     "black",
@@ -62,7 +63,7 @@ setup(
         "Topic :: Software Development :: Libraries",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    python_requires='>=3.6, <4',
+    python_requires=">=3.6, <4",
     license="MIT",
     keywords=["docker", "aws", "development", "macos", "linux"],
 )

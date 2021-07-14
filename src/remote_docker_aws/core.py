@@ -106,7 +106,7 @@ class RemoteDockerClient:
         return instances[0]
 
     def get_ip(self) -> str:
-        logger.info("Retrieving IP address of instance")
+        logger.debug("Retrieving IP address of instance")
         return self.get_instance()["PublicIpAddress"]
 
     def get_instance_id(self) -> str:
@@ -116,11 +116,11 @@ class RemoteDockerClient:
         return self.get_instance()["State"]["Name"]
 
     def start_instance(self):
-        logger.warning("Starting instance")
+        logger.info("Starting instance")
         return self.ec2_client.start_instances(InstanceIds=[self.get_instance_id()])
 
     def stop_instance(self):
-        logger.warning("Stopping instance")
+        logger.info("Stopping instance")
         return self.ec2_client.stop_instances(InstanceIds=[self.get_instance_id()])
 
     def _set_disable_api_termination(self, value: bool):
@@ -130,11 +130,11 @@ class RemoteDockerClient:
         )
 
     def enable_termination_protection(self):
-        logger.warning("Enabling Termination protection")
+        logger.info("Enabling Termination protection")
         return self._set_disable_api_termination(True)
 
     def disable_termination_protection(self):
-        logger.warning("Disabling Termination protection")
+        logger.info("Disabling Termination protection")
         return self._set_disable_api_termination(False)
 
     def is_termination_protection_enabled(self):
@@ -174,14 +174,13 @@ class RemoteDockerClient:
             for port_from, port_to in port_mappings.items():
                 cmd_s += f" -R 0.0.0.0:{port_from}:localhost:{port_to}"
 
-        logger.warning("Starting tunnel")
+        logger.info("Starting tunnel")
         cmd = shlex.split(cmd_s)
-        logger.debug("Running cmd: %s", cmd)
+        logger.debug("Running command: %s", cmd_s)
 
-        logger.warning("")
-        logger.warning("Forwarding: ")
-        logger.warning("Local: %s", self.local_forwards)
-        logger.warning("Remote: %s", self.remote_forwards)
+        logger.debug("Forwarding: ")
+        logger.debug("Local: %s", self.local_forwards)
+        logger.debug("Remote: %s", self.remote_forwards)
         # Use `subprocess.run` instead of `os.execvp` because the latter
         # prints a strange error: `sudo: setrlimit(RLIMIT_STACK): Invalid argument`
         subprocess.run(cmd, check=True)
@@ -216,26 +215,26 @@ class RemoteDockerClient:
         return SceptrePlan(context)
 
     def create_instance(self):
-        logger.warning("Creating instance")
+        logger.info("Creating instance")
         result = self._get_sceptre_plan().create()
 
         logger.debug("Got sceptre result: %s", result)
         if "complete" not in result.values():
             raise Exception(f"sceptre command failed: {list(result.values())}")
-        logger.warning("Stack created")
+        logger.info("Stack created")
 
         while self.get_instance_state() != "running":
             logger.warning("Waiting to bootstrap: instance not yet running")
             time.sleep(5)
 
-        logger.warning("Waiting until SSH access is available")
+        logger.info("Waiting until SSH access is available")
         ip = self.get_ip()
 
         wait_until_port_is_open(ip, 22, sleep_time=3, max_attempts=10)
         # Give it some extra time, AWS can throw fopen errors on apt-get update
         # if this is too rushed
         time.sleep(15)
-        logger.warning("Starting bootstrap")
+        logger.info("Starting bootstrap")
         self.bootstrap_instance()
 
     def delete_instance(self) -> Dict:
@@ -269,7 +268,7 @@ class RemoteDockerClient:
 
     # flake8: noqa: E501
     def bootstrap_instance(self):
-        logger.warning("Bootstrapping instance, will take a few minutes")
+        logger.info("Bootstrapping instance, will take a few minutes")
         configure_instance_cmd_s = """
         set -x
         && sudo sysctl -w net.core.somaxconn=4096
@@ -354,7 +353,7 @@ class RemoteDockerClient:
         replica_path, sync_paths = get_replica_and_sync_paths_for_unison(sync_dirs)
         ip = self.get_ip()
 
-        logger.warning("Ensuring remote directories exist")
+        logger.info("Ensuring remote directories exist")
         ssh_cmd_s = f"sudo install -d -o {INSTANCE_USERNAME} -g {INSTANCE_USERNAME}"
         for _dir in sync_dirs:
             ssh_cmd_s += f" -p {_dir}"
@@ -381,9 +380,8 @@ class RemoteDockerClient:
             repeat_watch=True,
         )
 
-        logger.warning("")
-        logger.warning("Watching: %s", sync_dirs)
-        logger.debug("Running command :%s", watch_cmd)
+        logger.debug("Watching: %s", sync_dirs)
+        logger.debug("Running command: %s", watch_cmd)
         os.execvp(watch_cmd[0], watch_cmd)
 
 
