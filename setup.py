@@ -10,12 +10,25 @@ if exists(readme_path):
 else:
     long_description = ""
 
-INSTALL_REQUIRES = ("boto3", "sceptre>=2.3", "click", "unison-gitignore>=1.0.0")
+INSTALL_REQUIRES = (
+    "boto3",
+    "sceptre>=2.5",
+    "click",
+    "unison-gitignore>=1.0.0",
+)
+DEV_REQUIRES = (
+    "black",
+    "pytest",
+    "flake8",
+    "moto[cloudformation,ec2]",
+    "cryptography",
+)
 
 
 setup(
     name="remote-docker-aws",
     install_requires=INSTALL_REQUIRES,
+    extras_require=dict(dev=DEV_REQUIRES),
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
     description="Client to control a remote-docker agent",
