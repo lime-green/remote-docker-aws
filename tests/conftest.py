@@ -39,3 +39,14 @@ def mock_exec():
 def mock_run():
     with mock.patch("subprocess.run", autospec=True) as mock_run_:
         yield mock_run_
+
+
+@pytest.fixture
+def mock_user():
+    return "test_user"
+
+
+@pytest.fixture(autouse=True)
+def mock_getuser(mock_user):
+    with mock.patch("remote_docker_aws.core.getuser", return_value=mock_user):
+        yield

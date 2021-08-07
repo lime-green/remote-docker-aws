@@ -187,7 +187,7 @@ class TestCore:
         ]
 
     @patch_get_ip
-    def test_tunnel(self, mock_get_ip, mock_run, remote_docker_client):
+    def test_tunnel(self, mock_get_ip, mock_run, remote_docker_client, mock_user):
         mock_get_ip.return_value = "1.2.3.4"
         remote_docker_client.start_tunnel()
 
@@ -214,7 +214,7 @@ class TestCore:
             "-o",
             "PermitLocalCommand=yes",
             "-o",
-            "LocalCommand=sudo chown josh /var/run/remote-docker.sock",
+            f"LocalCommand=sudo chown {mock_user} /var/run/remote-docker.sock",
             "-L",
             "localhost:80:localhost:80",
             "-R",
