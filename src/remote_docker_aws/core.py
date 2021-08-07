@@ -1,13 +1,13 @@
 import os
 import shlex
 import subprocess
+from getpass import getuser
 from typing import Dict, List
 
 from unison_gitignore.parser import GitIgnoreToUnisonIgnore
 
 from .config import RemoteDockerConfigProfile
 from .constants import (
-    DOCKER_PORT_FORWARD,
     INSTANCE_USERNAME,
     PORT_MAP_TYPE,
 )
@@ -96,8 +96,13 @@ class RemoteDockerClient:
             f" -i {self.ssh_key_path} {self.instance.username}@{ip}"
         )
 
-        for port_from, port_to in DOCKER_PORT_FORWARD.items():
-            cmd_s += f" -L localhost:{port_from}:localhost:{port_to}"
+        target_sock = "/var/run/remote-docker.sock"
+        cmd_s += (
+            f" -L {target_sock}:/var/run/docker.sock"
+            " -o StreamLocalBindUnlink=yes"
+            " -o PermitLocalCommand=yes"
+            f" -o LocalCommand='sudo chown {getuser()} {target_sock}'"
+        )
 
         for _name, port_mappings in local_forwards.items():
             for port_from, port_to in port_mappings.items():
@@ -139,6 +144,24 @@ class RemoteDockerClient:
 
     def create_keypair(self) -> Dict:
         return self.instance.create_keypair(self.ssh_key_path)
+
+    def switch_docker_context(self):
+        logger.info("Switching docker context to remote-docker")
+
+        subprocess.run(
+            (
+                "docker context inspect remote-docker &>/dev/null || "
+                "docker context create"
+                " --docker host=unix:///var/run/remote-docker.sock remote-docker"
+            ),
+            check=True,
+            shell=True,
+        )
+        subprocess.run(
+            "docker context use remote-docker >/dev/null",
+            check=True,
+            shell=True,
+        )
 
     def _get_unison_cmd(
         self,

@@ -1,6 +1,5 @@
 import boto3
 import ipaddress
-import os
 from contextlib import contextmanager
 from unittest import mock
 
@@ -20,8 +19,6 @@ KEY_PATH = "/fake_key_path"
 REGION = "ca-central-1"
 
 
-patch_exec = mock.patch("os.execvp", autospec=True)
-patch_run = mock.patch("subprocess.run", autospec=True)
 patch_get_ip = mock.patch(
     "remote_docker_aws.providers.AWSInstanceProvider.get_ip", autospec=True
 )
@@ -76,11 +73,7 @@ class TestCore:
     def create_instance(self, remote_docker_client):
         def create():
             with patch_wait_until_port_is_open:
-                if not isinstance(os.execvp, mock.MagicMock):
-                    with patch_exec:
-                        remote_docker_client.create_instance()
-                else:
-                    remote_docker_client.create_instance()
+                remote_docker_client.create_instance()
 
         return create
 
@@ -143,9 +136,7 @@ class TestCore:
             assert not remote_docker_client.is_termination_protection_enabled()
 
     @patch_get_ip
-    @patch_exec
-    @patch_run
-    def test_sync(self, mock_run, mock_execvp, mock_get_ip, remote_docker_client):
+    def test_sync(self, mock_get_ip, mock_run, mock_exec, remote_docker_client):
         mock_get_ip.return_value = "1.2.3.4"
         remote_docker_client.sync()
 
@@ -187,17 +178,16 @@ class TestCore:
         ]
         assert call_2[0][0] == expected_unison_cmd
 
-        mock_execvp.assert_called_once()
-        assert mock_execvp.call_args[0][0] == expected_unison_cmd[0]
-        assert mock_execvp.call_args[0][1] == [
+        mock_exec.assert_called_once()
+        assert mock_exec.call_args[0][0] == expected_unison_cmd[0]
+        assert mock_exec.call_args[0][1] == [
             *expected_unison_cmd[:-2],
             "-repeat",
             "watch",
         ]
 
     @patch_get_ip
-    @patch_run
-    def test_tunnel(self, mock_run, mock_get_ip, remote_docker_client):
+    def test_tunnel(self, mock_get_ip, mock_run, remote_docker_client):
         mock_get_ip.return_value = "1.2.3.4"
         remote_docker_client.start_tunnel()
 
@@ -218,14 +208,19 @@ class TestCore:
             "/fake_key_path",
             "ubuntu@1.2.3.4",
             "-L",
-            "localhost:23755:localhost:2375",
+            "/var/run/remote-docker.sock:/var/run/docker.sock",
+            "-o",
+            "StreamLocalBindUnlink=yes",
+            "-o",
+            "PermitLocalCommand=yes",
+            "-o",
+            "LocalCommand=sudo chown josh /var/run/remote-docker.sock",
             "-L",
             "localhost:80:localhost:80",
             "-R",
             "0.0.0.0:8080:localhost:8080",
         ]
 
-    @patch_run
     def test_create_keypair(self, mock_run, remote_docker_client):
         with mock.patch("builtins.open") as mock_open:
             mock_open.side_effect = mock.mock_open(read_data=generate_ssh_public_key())

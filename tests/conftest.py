@@ -27,3 +27,15 @@ def ensure_aws_is_mocked():
 def ensure_sleep_is_mocked():
     with mock.patch("time.sleep"):
         yield
+
+
+@pytest.fixture(autouse=True)
+def mock_exec():
+    with mock.patch("os.execvp", autospec=True) as mock_exec_:
+        yield mock_exec_
+
+
+@pytest.fixture(autouse=True)
+def mock_run():
+    with mock.patch("subprocess.run", autospec=True) as mock_run_:
+        yield mock_run_
