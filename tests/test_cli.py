@@ -1,4 +1,3 @@
-import os
 import subprocess
 from contextlib import contextmanager
 from unittest import mock
@@ -12,10 +11,6 @@ from remote_docker_aws.config import RemoteDockerConfigProfile
 
 
 AWS_REGION = "ca-central-1"
-
-
-patch_exec = mock.patch("os.execvp", autospec=True)
-patch_run = mock.patch("subprocess.run", autospec=True)
 
 
 def test_cli_entrypoint_runs_successfully():
@@ -51,24 +46,29 @@ class TestCLICommandsWithMoto:
             yield runner
 
     @pytest.fixture
-    def create_instance(self, cli_runner):
+    def create_instance(self, cli_runner, mock_exec, mock_run):
         def create():
             with mock.patch(
                 "remote_docker_aws.providers.wait_until_port_is_open", autospec=True
             ):
-                if not isinstance(os.execvp, mock.MagicMock):
-                    with mock.patch("os.execvp"):
-                        result = cli_runner.invoke(cli, ["create"])
-                else:
-                    result = cli_runner.invoke(cli, ["create"])
+                result = cli_runner.invoke(cli, ["create"])
+
+                assert mock_run.call_count == 2
+                assert mock_exec.call_count == 1
+                mock_run.reset_mock()
+                mock_exec.reset_mock()
+
                 return result
 
         return create
 
     @pytest.fixture
-    def delete_instance(self, cli_runner):
+    def delete_instance(self, cli_runner, mock_run):
         def delete():
             result = cli_runner.invoke(cli, ["delete"], input="y")
+
+            mock_run.reset_mock()
+
             return result
 
         return delete
@@ -92,7 +92,6 @@ class TestCLICommandsWithMoto:
         result = delete_instance()
         assert result.exit_code == 0
 
-    @patch_exec
     def test_ssh(self, mock_exec, cli_runner, instance):
         with instance():
             result = cli_runner.invoke(cli, ["ssh"])
@@ -115,6 +114,11 @@ class TestCLICommandsWithMoto:
         assert result.exit_code == 0
         assert result.stdout
 
+    def test_context(self, cli_runner, mock_run):
+        result = cli_runner.invoke(cli, ["context"])
+        assert result.exit_code == 0
+        assert mock_run.call_count == 2
+
     @mock.patch(
         "remote_docker_aws.core.RemoteDockerClient.create_keypair", autospec=True
     )
@@ -125,8 +129,7 @@ class TestCLICommandsWithMoto:
         assert mock_create_keypair.call_count == 1
 
     @pytest.mark.parametrize("local,remote", [(None, None), ("80:80", "3300:3300")])
-    @patch_run
-    def test_tunnel(self, mock_run, local, remote, cli_runner, instance):
+    def test_tunnel(self, local, remote, mock_run, cli_runner, instance):
         args = ["tunnel"]
 
         if local:
@@ -136,13 +139,11 @@ class TestCLICommandsWithMoto:
 
         with instance():
             result = cli_runner.invoke(cli, args)
-        assert result.exit_code == 0
-        mock_run.assert_called_once()
+            assert result.exit_code == 0
+            mock_run.assert_called_once()
 
     @pytest.mark.parametrize("directories", [(["/data/mock_dir1", "/data/mock_dir2"])])
-    @patch_exec
-    @patch_run
-    def test_sync(self, mock_run, mock_exec, directories, cli_runner, instance):
+    def test_sync(self, directories, mock_run, mock_exec, cli_runner, instance):
         args = ["sync"]
 
         if directories:
@@ -150,8 +151,9 @@ class TestCLICommandsWithMoto:
 
         with instance():
             result = cli_runner.invoke(cli, args)
-        assert result.exit_code == 0
-        assert mock_run.call_count == 2
+            assert result.exit_code == 0
+            assert mock_run.call_count == 2
+
         mock_exec.assert_called_once()
 
     @mock.patch(

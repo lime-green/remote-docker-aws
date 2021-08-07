@@ -3,8 +3,6 @@ import pathlib
 from typing import Dict
 
 
-DOCKER_PORT_FORWARD = {"23755": "2375"}
-
 KEY_PAIR_NAME = "remote-docker-keypair"
 INSTANCE_USERNAME = "ubuntu"
 # Used to identify the ec2 instance

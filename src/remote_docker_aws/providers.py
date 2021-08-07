@@ -14,6 +14,7 @@ from .constants import (
     AWS_REGION_TO_UBUNTU_AMI_MAPPING,
     SCEPTRE_PATH,
 )
+from .exceptions import InstanceNotRunning, RemoteDockerException
 from .util import logger, wait_until_port_is_open
 
 
@@ -83,6 +84,7 @@ class InstanceProvider:
             f" {options} {self.username}@{self.get_ip()} {ssh_cmd}"
         )
 
+        logger.debug("Running: %s", cmd_s)
         return shlex.split(cmd_s)
 
 
@@ -124,11 +126,11 @@ class AWSInstanceProvider(InstanceProvider):
         ]
 
         if len(valid_reservations) == 0:
-            raise RuntimeError(
+            raise RemoteDockerException(
                 "There are no valid reservations, did you create the instance?"
             )
         if len(valid_reservations) > 1:
-            raise RuntimeError(
+            raise RemoteDockerException(
                 "There is more than one reservation found that matched, not sure what to do"
             )
 
@@ -137,6 +139,10 @@ class AWSInstanceProvider(InstanceProvider):
         return instances[0]
 
     def get_ip(self) -> str:
+        if not self.is_running():
+            raise InstanceNotRunning(
+                "Instance is not running. start it with `rd start`"
+            )
         return self._get_instance()["PublicIpAddress"]
 
     def get_instance_id(self) -> str:
@@ -246,8 +252,7 @@ class AWSInstanceProvider(InstanceProvider):
         && sudo sysctl -w net.core.somaxconn=4096
         && sudo apt-get -y update
         && sudo apt-get -y install build-essential curl file git docker.io
-        && "sudo sed -i -e '/ExecStart=/ s/fd:\/\//127\.0\.0\.1:2375/' '/lib/systemd/system/docker.service'"
-        && sudo cp /lib/systemd/system/docker.service /etc/systemd/system/docker.service
+        && sudo usermod -aG docker ubuntu
         && sudo systemctl daemon-reload
         && sudo systemctl restart docker.service
         && sudo systemctl enable docker.service

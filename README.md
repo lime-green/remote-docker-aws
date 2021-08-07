@@ -75,12 +75,12 @@ How it works: two processes are run, a sync and a tunnel process.
 
 ## Daily Running
 
-Note: QUIT Docker Desktop (or any local docker-agent equivalent) when using the remote agent
-
 1. Start the remote-docker ec2 instance
     ```bash
     remote-docker-aws start
     ```
+   This will automatically switch the docker context for you. If you want to switch
+   back to the default agent run `docker context use default`
 
 1. In one terminal start the tunnel so that the ports you need to connect to are exposed
     ```bash
@@ -106,21 +106,7 @@ Note: QUIT Docker Desktop (or any local docker-agent equivalent) when using the 
     remote-docker-aws sync
     ```
 
-1. Make sure to set `DOCKER_HOST`:
-    ```bash
-    # In the terminal you use docker, or add to ~/.bashrc so it applies automatically
-    export DOCKER_HOST="tcp://localhost:23755"
-    ```
-
-   Now you can use docker as you would normally:
-   - `docker build -t myapp .`
-   - `docker-compose up`
-   - etc.
-
-   You can usually skip starting your services again since when the instance
-   boots, it will start up docker and resume where it left off from the day before.
-
-1. Develop and code! All services should be accessible and usable as usual
+1. Develop and code! All services should be accessible and usable as usual (eg: `docker ps`, `docker-compose up`, etc.)
 as long as you are running `remote-docker-aws tunnel` and are forwarding the ports you need
 
 1. When you're done for the day don't forget to stop the instance to save money:
@@ -227,4 +213,8 @@ Nothing else used should incur any cost with reasonable usage
 
 ## Notes
 - See `remote-docker-aws --help` for more information on the commands available
+- The unison version running on the server and running locally have to
+match. If one of them updates to a newer version, you should update the other.
+This can be done locally via `brew upgrade unison`, and to update the remote unison version:
+`rd ssh` then `brew upgrade unison`
 
