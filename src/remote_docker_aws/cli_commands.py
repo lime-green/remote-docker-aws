@@ -9,11 +9,15 @@ from .config import RemoteDockerConfigProfile
 from .util import logger
 
 
+CLICK_CONTEXT_SETTINGS = dict(
+    # Don't cutoff command help docs
+    max_content_width=500,
+)
 pass_config = click.make_pass_decorator(RemoteDockerClient)
 
 
 def _convert_port_forward_to_dict(
-    _client: RemoteDockerClient, port_forwards: Tuple[str]
+    _ctx, _client: RemoteDockerClient, port_forwards: Tuple[str]
 ):
     if port_forwards is None:
         return None
@@ -25,7 +29,7 @@ def _convert_port_forward_to_dict(
     return dict(cli_port_forward=ret)
 
 
-@click.group()
+@click.group(context_settings=CLICK_CONTEXT_SETTINGS)
 @click.option(
     "--profile",
     "profile_name",
