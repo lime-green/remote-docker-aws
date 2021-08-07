@@ -13,7 +13,7 @@ else:
 INSTALL_REQUIRES = (
     "boto3",
     "sceptre>=2.5",
-    "click",
+    "click~=8.0",
     "unison-gitignore>=1.0.0",
     "colorlog",
 )
