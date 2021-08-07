@@ -63,9 +63,13 @@ class TestCLICommandsWithMoto:
         return create
 
     @pytest.fixture
-    def delete_instance(self, cli_runner):
+    def delete_instance(self, cli_runner, mock_run):
         def delete():
-            return cli_runner.invoke(cli, ["delete"], input="y")
+            result = cli_runner.invoke(cli, ["delete"], input="y")
+
+            mock_run.reset_mock()
+
+            return result
 
         return delete
 
@@ -135,8 +139,8 @@ class TestCLICommandsWithMoto:
 
         with instance():
             result = cli_runner.invoke(cli, args)
-        assert result.exit_code == 0
-        mock_run.assert_called_once()
+            assert result.exit_code == 0
+            mock_run.assert_called_once()
 
     @pytest.mark.parametrize("directories", [(["/data/mock_dir1", "/data/mock_dir2"])])
     def test_sync(self, directories, mock_run, mock_exec, cli_runner, instance):
@@ -147,8 +151,9 @@ class TestCLICommandsWithMoto:
 
         with instance():
             result = cli_runner.invoke(cli, args)
-        assert result.exit_code == 0
-        assert mock_run.call_count == 2
+            assert result.exit_code == 0
+            assert mock_run.call_count == 2
+
         mock_exec.assert_called_once()
 
     @mock.patch(

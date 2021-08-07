@@ -145,7 +145,7 @@ class RemoteDockerClient:
     def create_keypair(self) -> Dict:
         return self.instance.create_keypair(self.ssh_key_path)
 
-    def switch_docker_context(self):
+    def use_remote_context(self):
         logger.info("Switching docker context to remote-docker")
 
         subprocess.run(
@@ -162,6 +162,11 @@ class RemoteDockerClient:
             check=True,
             shell=True,
         )
+
+    def use_default_context(self):
+        logger.info("Switching docker context to default")
+
+        subprocess.run("docker context use default >/dev/null", check=True, shell=True)
 
     def _get_unison_cmd(
         self,

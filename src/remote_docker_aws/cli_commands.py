@@ -62,7 +62,7 @@ def cmd_ssh(client: RemoteDockerClient, ssh_options=None, ssh_cmd=None):
 def cmd_start(client: RemoteDockerClient):
     """Start the remote agent instance"""
     print(client.start_instance())
-    client.switch_docker_context()
+    client.use_remote_context()
 
 
 @cli.command(name="stop")
@@ -70,6 +70,7 @@ def cmd_start(client: RemoteDockerClient):
 def cmd_stop(client: RemoteDockerClient):
     """Stop the remote agent instance"""
     print(client.stop_instance())
+    client.use_default_context()
 
 
 @cli.command(name="ip")
@@ -91,7 +92,7 @@ def cmd_create_keypair(client: RemoteDockerClient):
 def cmd_create(client: RemoteDockerClient):
     """Provision a new ec2 instance to use as the remote agent"""
     print(client.create_instance())
-    client.switch_docker_context()
+    client.use_remote_context()
 
 
 @cli.command(name="delete")
@@ -106,6 +107,7 @@ def cmd_delete(client: RemoteDockerClient):
 
     click.confirm("Are you sure you want to delete your instance?", abort=True)
     print(client.delete_instance())
+    client.use_default_context()
 
 
 @cli.command(
@@ -170,8 +172,8 @@ def enable_termination_protection(client: RemoteDockerClient):
     name="context",
 )
 @pass_config
-def switch_docker_context(client: RemoteDockerClient):
+def use_remote_context(client: RemoteDockerClient):
     """
     Creates and switches to the remote-docker context
     """
-    client.switch_docker_context()
+    client.use_remote_context()
