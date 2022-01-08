@@ -176,7 +176,7 @@ The current configurable values are:
     and point it to port 8080 of the remote-docker instance (which ostensibly a container is listening on).
     The name doesn't do anything except help legibility.
 
-#### `remote_port_forwwards`
+#### `remote_port_forwards`
   - defaults to: `{}`
   - Similar to `local_port_forwards` except will open the port on the remote instance.
 
