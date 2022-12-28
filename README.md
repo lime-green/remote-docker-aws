@@ -172,7 +172,7 @@ The current configurable values are:
 #### `local_port_forwards`
   - defaults to: `{}`
   - Object containing label -> port mapping objects for opening the ports on the remote host.
-    A mapping of `"remote_port_forwards": {"my_app": {"80": "8080"}}` will open port 80 on your local machine
+    A mapping of `"local_port_forwards": {"my_app": {"80": "8080"}}` will open port 80 on your local machine
     and point it to port 8080 of the remote-docker instance (which ostensibly a container is listening on).
     The name doesn't do anything except help legibility.
 
