@@ -170,7 +170,7 @@ class TestCore:
             "-batch",
             "-sshargs",
             "-i /fake_key_path",
-            "-ignore=Regex ^(.+/)?test\\.py((?P<ps_d>/).*)?$",
+            "-ignore=Regex ^(.+/)?test\\.py(/.*)?$",
             "-path",
             "dir",
             "-force",
