@@ -259,9 +259,9 @@ class AWSInstanceProvider(InstanceProvider):
         && "sudo sed -i -e '/GatewayPorts/ s/^.*$/GatewayPorts yes/' '/etc/ssh/sshd_config'"
         && sudo service sshd restart
         && /bin/bash -c '"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
-        && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
         && echo 'eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)' >> /home/ubuntu/.profile
-        && brew install unison eugenmayer/dockersync/unox
+        && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+        && brew install unison
         && sudo cp "$(which unison)" /usr/local/bin/
         && sudo cp "$(which unison-fsmonitor)" /usr/local/bin/
         """
